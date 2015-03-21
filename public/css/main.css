@@ -1,0 +1,18 @@
+#file-list.table > thead{
+	color: #333;
+	background-color: #f5f5f5;
+	border-color: #ddd;
+}
+
+#path-crum{
+	background-color: transparent; 
+}
+
+.dropdown-menu i{
+	margin-right: 10px;
+	width: 10px;
+}
+
+.navbar-nav.pull-right{
+	margin-right: 10px;
+}

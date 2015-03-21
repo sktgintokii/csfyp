@@ -1,0 +1,973 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"nex",
+				"nextSibling"
+			],
+			[
+				"pre",
+				"preventDefault"
+			],
+			[
+				"ad",
+				"addItemToPlaylist"
+			],
+			[
+				"pl",
+				"playlist"
+			],
+			[
+				"googl",
+				"googleDrive"
+			],
+			[
+				"C",
+				"CLIENT_ID"
+			],
+			[
+				"add",
+				"addEventListener"
+			],
+			[
+				"st",
+				"stopVideo"
+			],
+			[
+				"fon",
+				"font-size"
+			],
+			[
+				"mar",
+				"margin"
+			],
+			[
+				"colo",
+				"background-color"
+			],
+			[
+				"bo",
+				"border-radius"
+			],
+			[
+				"col",
+				"col-sm-8"
+			],
+			[
+				"margin",
+				"margin-top"
+			],
+			[
+				"c",
+				"cart-list"
+			],
+			[
+				"mr",
+				"margin-left"
+			],
+			[
+				"m",
+				"margin-right"
+			],
+			[
+				"inline",
+				"inline-block"
+			],
+			[
+				"min",
+				"min-width"
+			],
+			[
+				"marg",
+				"margin"
+			],
+			[
+				"li",
+				"list-style"
+			],
+			[
+				"conve",
+				"converged"
+			],
+			[
+				"old",
+				"old_likelihood"
+			],
+			[
+				"mu",
+				"multiplier"
+			],
+			[
+				"multipl",
+				"multiply"
+			],
+			[
+				"get",
+				"getEsimation"
+			],
+			[
+				"index",
+				"index"
+			],
+			[
+				"de",
+				"defaultdict"
+			],
+			[
+				"time",
+				"timeSpent"
+			],
+			[
+				"fre",
+				"freqitems1"
+			],
+			[
+				"line",
+				"lineTuple"
+			],
+			[
+				"Du",
+				"dugtrio"
+			],
+			[
+				"b",
+				"background"
+			],
+			[
+				"back",
+				"background-color"
+			],
+			[
+				"background-",
+				"background-color"
+			],
+			[
+				"ba",
+				"background-color"
+			],
+			[
+				"margin-",
+				"margin-right"
+			],
+			[
+				"top",
+				"margin-top"
+			],
+			[
+				"ra",
+				"repeat-y"
+			],
+			[
+				"dum",
+				"dump_NAT"
+			],
+			[
+				"close",
+				"close_port"
+			],
+			[
+				"sd",
+				"sd"
+			],
+			[
+				"tra",
+				"trans_port"
+			],
+			[
+				"por",
+				"port_t"
+			],
+			[
+				"P",
+				"PORT_NUM"
+			],
+			[
+				"tr",
+				"trans_port"
+			],
+			[
+				"hol",
+				"holdNumt"
+			],
+			[
+				"x",
+				"x"
+			],
+			[
+				"borro",
+				"borrowNumt"
+			],
+			[
+				"re",
+				"returnNumt"
+			],
+			[
+				"h",
+				"holdNumt"
+			],
+			[
+				"hl",
+				"holdNum"
+			],
+			[
+				"nam",
+				"namet"
+			],
+			[
+				"code",
+				"codetable"
+			],
+			[
+				"getc",
+				"getcurr"
+			],
+			[
+				"ini",
+				"init_dict"
+			],
+			[
+				"CODE",
+				"CODE_SIZE"
+			],
+			[
+				"inp",
+				"input_file_names"
+			],
+			[
+				"write",
+				"write_string"
+			],
+			[
+				"SI",
+				"CODE_SIZE"
+			],
+			[
+				"out",
+				"output_file_name"
+			],
+			[
+				"ou",
+				"output"
+			],
+			[
+				"o",
+				"output_file_name"
+			],
+			[
+				"output",
+				"output_file"
+			],
+			[
+				"di",
+				"dictpos"
+			],
+			[
+				"dic",
+				"dictpos"
+			],
+			[
+				"find",
+				"findDict"
+			],
+			[
+				"writ",
+				"written"
+			],
+			[
+				"wri",
+				"written"
+			],
+			[
+				"ca",
+				"curchar"
+			],
+			[
+				"pr",
+				"prefix"
+			],
+			[
+				"prefix",
+				"prefixCode"
+			],
+			[
+				"pref",
+				"prefixCode"
+			],
+			[
+				"borrow",
+				"borrowNum"
+			],
+			[
+				"borr",
+				"borrowLimit"
+			],
+			[
+				"return",
+				"returnNum"
+			],
+			[
+				"compre",
+				"compress"
+			],
+			[
+				"in",
+				"input_file_names"
+			],
+			[
+				"no",
+				"no_of_file"
+			],
+			[
+				"COD",
+				"CODE_SIZE"
+			],
+			[
+				"wr",
+				"write_code"
+			],
+			[
+				"sy",
+				"symtabpos"
+			],
+			[
+				"char",
+				"charpos"
+			],
+			[
+				"d",
+				"dir_y"
+			],
+			[
+				"dir",
+				"dir_x"
+			],
+			[
+				"prin",
+				"print"
+			],
+			[
+				"game",
+				"gameBoard"
+			],
+			[
+				"ne",
+				"nextColumn"
+			],
+			[
+				"n",
+				"nextColumn"
+			],
+			[
+				"pla",
+				"player2"
+			],
+			[
+				"player",
+				"player1"
+			],
+			[
+				"buf",
+				"buf_size"
+			],
+			[
+				"con",
+				"connect_four"
+			],
+			[
+				"PLAYER",
+				"playerSymbol"
+			],
+			[
+				"PLA",
+				"playerSymbol"
+			],
+			[
+				"Player",
+				"playerSymbol"
+			],
+			[
+				"rev",
+				"reserveKey"
+			],
+			[
+				"ge",
+				"getDecryptKernel"
+			],
+			[
+				"en",
+				"encryptionAlgorithm"
+			],
+			[
+				"pa",
+				"password"
+			],
+			[
+				"encrypt",
+				"encryptKernel"
+			],
+			[
+				"ga",
+				"gameBoard"
+			],
+			[
+				"dep",
+				"depth"
+			],
+			[
+				"spa",
+				"space_mult"
+			],
+			[
+				"ch",
+				"checkEndGame"
+			],
+			[
+				"is",
+				"isGameEnded"
+			],
+			[
+				"sco",
+				"scoring"
+			],
+			[
+				"sc",
+				"score"
+			],
+			[
+				"dis",
+				"display"
+			],
+			[
+				"se",
+				"searchDepth"
+			],
+			[
+				"al",
+				"alphabeta"
+			],
+			[
+				"op",
+				"opponentSymbol"
+			],
+			[
+				"max",
+				"maximizingPlayer"
+			],
+			[
+				"Com",
+				"Computer"
+			],
+			[
+				"play",
+				"player"
+			],
+			[
+				"firs",
+				"first_turn"
+			],
+			[
+				"accep",
+				"accept_fd"
+			],
+			[
+				"acce",
+				"accept_fd"
+			],
+			[
+				"acc",
+				"accepting"
+			],
+			[
+				"screen",
+				"screen_name"
+			],
+			[
+				"msg",
+				"msg_list"
+			],
+			[
+				"scr",
+				"screen_name"
+			],
+			[
+				"user",
+				"user_list"
+			],
+			[
+				"inet",
+				"inet_addr"
+			],
+			[
+				"scre",
+				"screen_name"
+			],
+			[
+				"screen_",
+				"screen_name_len"
+			],
+			[
+				"main",
+				"main_task"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "app.js",
+			"settings":
+			{
+				"buffer_size": 1743,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "public/index.html",
+			"settings":
+			{
+				"buffer_size": 2011,
+				"line_ending": "Unix",
+				"name": "<!DOCTYPE html>"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 146.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/wing/Documents/yr3sem2/cs/public/element/age-slider.html",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg2/public/lib/socketio.js",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg2/public/index.html",
+		"/Users/wing/Documents/yr3sem2/cs/app.js",
+		"/Users/wing/Documents/yr3sem2/web/music/public/index.html",
+		"/Users/wing/Documents/yr3sem2/web/music/public/upload.html",
+		"/Users/wing/Documents/yr3sem2/web/music/app.js",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg2/public/css/main.css",
+		"/opt/local/var/macports/sources/rsync.macports.org/release/tarballs/ports/_resources/port1.0/group/bitbucket-1.0.tcl",
+		"/Users/wing/Documents/yr3sem2/ierg4210/shop50/views/layouts/main.handlebars",
+		"/Users/wing/Documents/yr3sem2/ierg4210/shop50/public/css/main.css",
+		"/Users/wing/Documents/yr3sem2/ierg4210/shop50/public/lib/main.js",
+		"/Users/wing/Documents/yr3sem2/ierg4210/shop50/views/product.handlebars",
+		"/Users/wing/Documents/yr3sem2/ierg4210/shop50/rootkey.csv",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg1/4140/getImgs.py",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg1/4140/im.py",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg1/4140/hi.cgi",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg1/4140/edit.cgi",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg1/4140/upload.cgi",
+		"/Users/wing/Documents/yr3sem2/csci4140/asg1/4140/index.pl",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/shop50/css/main.css",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/shop50/css/product.css",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/shop50/product.html",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/shop50/product2.html",
+		"/Users/wing/Documents/yr3 sem2/csci4140/asg1/4140/hi.cgi",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/shop50/product3.html",
+		"/Users/wing/Documents/yr3 sem2/csci4140/asg1/4140/index.pl",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/shop50/index.html",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/shop50/hat.html",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/css/main.css",
+		"/Users/wing/Documents/yr3 sem2/ierg4210/main.html",
+		"/Users/wing/Documents/yr3 sem2/csci4140/project/main.html",
+		"/Users/wing/Documents/yr3 sem2/csci4140/project/js/main_model.js",
+		"/Users/wing/Downloads/ierg4210.html",
+		"/Users/wing/Desktop/tinyxml2-master/4queens.xml",
+		"/Users/wing/Downloads/csci4180_asg3/Mydedup.java",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw4/1d.py",
+		"/Users/wing/Downloads/script/local_test_0.sh",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw4/2a.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw3/distinct.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw3/hyperloglog.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw3/temp.py",
+		"/Users/wing/Documents/yr3 sem1/csci4180/HW/hw2/q2/run.sh",
+		"/Users/wing/Desktop/hyperloglog.py",
+		"/Users/wing/Desktop/1155016929/ParallelBfs.java",
+		"/Users/wing/Documents/yr3 sem1/csci4180/HW/hw2/q2/Node.java",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/B/mapper1.py",
+		"/Users/wing/Documents/yr3 sem1/csci4180/HW/hw1/bigramInitialCount.java",
+		"/Users/wing/Desktop/HBaseImport.java",
+		"/Users/wing/Documents/yr3 sem1/csci4180/HW/hw1/LengthCount.java",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/hw2Sumbit/3/A.py",
+		"/Users/wing/Documents/yr3 sem1/csci4180/HW/hw1/bigramInitialRF.java",
+		"/Users/wing/Documents/yr3 sem1/csci4180/HW/hw1/rf2.java",
+		"/Users/wing/Desktop/ImmutableQueue.java",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/A/aprior.py",
+		"/Users/wing/Documents/yr3 sem1/csci4180/HW/hw1/run.sh",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/B/reducer1.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/B/mapper2.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/B/reducer2.py",
+		"/Users/wing/Desktop/orienteering.cpp",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/Q3/A.py",
+		"/Users/wing/Desktop/百度雲分享",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/B/reducer.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw2/B/mapper.py",
+		"/Users/wing/Desktop/mapper.py",
+		"/Users/wing/Documents/n2/地图常用词语，说法：",
+		"/Users/wing/Desktop/a.java",
+		"/Users/wing/Desktop/tinyxml2-master/3queens.xml",
+		"/Users/wing/Desktop/tinyxml2-master/test.cpp",
+		"/Users/wing/Desktop/dischoco/src/util/parser/XDisCSP.xsd",
+		"/Users/wing/Desktop/temp.java",
+		"/Users/wing/Desktop/hw1/code/1e/mapper.py",
+		"/Users/wing/Desktop/tinyxml2-master/resources/dream.xml",
+		"/Users/wing/Desktop/hw1/code/1e/reducer.py",
+		"/Users/wing/Development/parser/4queens.xml",
+		"/Users/wing/Desktop/CSP-XML-parser 3/examples/C++/example.cc",
+		"/Users/wing/Desktop/CSP-XML-parser 3/C++/include/XMLParser_libxml2.hh",
+		"/Users/wing/Desktop/CSP-XML-parser 3/C++/include/XMLParser.hh",
+		"/Users/wing/Desktop/CSP-XML-parser 3/C/src/C_XMLParser.cc",
+		"/Users/wing/Desktop/CSP-XML-parser 3/C++/src/fnparser.cc",
+		"/Users/wing/Desktop/CSP-XML-parser 3/C++/include/ExpressionParser.hh",
+		"/Users/wing/Desktop/CSP-XML-parser/examples/C++/example.cc",
+		"/Users/wing/Desktop/CSP-XML-parser 2/xercesc/util/XercesDefs.hpp",
+		"/Users/wing/Desktop/CSP-XML-parser 2/xercesc/util/PlatformUtils.hpp",
+		"/Users/wing/Desktop/CSP-XML-parser 2/README",
+		"/Users/wing/Desktop/CSP-XML-parser 2/XMLParser.h",
+		"/Users/wing/Desktop/CSP-XML-parser 2/main.cc",
+		"/Users/wing/Desktop/CSP-XML-parser/README",
+		"/Users/wing/Desktop/libxml2-2.7.2/README",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/Q4",
+		"/Users/wing/Development/engg4030/Untitled.py",
+		"/Users/wing/Desktop/CSP-XML-parser/examples/demo.xml",
+		"/Users/wing/Desktop/CSP-XML-parser/C++/src/fnparser.cc",
+		"/Users/wing/Desktop/CSP-XML-parser/C++/main.d",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1g/reducer.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1f/mapper.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1g/mapper.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1f/reducer.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1e/reducer.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1e/mapper.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1d/reducer.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1d/mapper.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1c/reducer.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/1c/mapper.py",
+		"/Users/wing/Documents/yr3 sem1/engg4030/hw1/count.py",
+		"/Users/wing/Development/engg4030/q1/reducer.py",
+		"/Users/wing/Development/engg4030/q1/mapper.py",
+		"/Volumes/C/Users/wing/Documents/qnx/agentXX/agnetXX.cc",
+		"/Users/wing/Desktop/4queen",
+		"/Volumes/C/Users/wing/Desktop/log.txt",
+		"/Users/wing/Library/Application Support/Sublime Text 2/Packages/User/Default (OSX).sublime-keymap",
+		"/Users/wing/Desktop/63327678",
+		"/Users/wing/Documents/yr3 sem1/note0",
+		"/Users/wing/Desktop/google_5000000.txt",
+		"/Volumes/C/Users/wing/Desktop/fyp/run.sh",
+		"/Users/wing/Desktop/Readme.txt",
+		"/Users/wing/Desktop/responsive/main.html",
+		"/Users/wing/Desktop/Respond-master/test/test.css",
+		"/Users/wing/Desktop/responsive/test.html",
+		"/Users/wing/Desktop/responsive/responsive.css",
+		"/Users/wing/Desktop/Respond-master/test/test.html",
+		"/Users/wing/Desktop/index.html",
+		"/Users/wing/Desktop/Respond-master/test/test2.css",
+		"/Users/wing/Desktop/Respond-master/dest/respond.src.js",
+		"/Users/wing/Desktop/css/muse.css",
+		"/Users/wing/Desktop/responsive/index.html",
+		"/Users/wing/Desktop/css/index.css",
+		"/Users/wing/Desktop/css/index のコピー.css"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"addItemToPlaylist",
+			"onYouTubeIframeAPIReady",
+			"files.",
+			"files",
+			">\n",
+			"img",
+			"200",
+			"table",
+			"form",
+			"text",
+			"class=\"text-center\"",
+			"<button>",
+			"print",
+			"math.degrees",
+			"math.degrees(angle",
+			"print angle(.*)",
+			"list",
+			"clone",
+			"source",
+			"args",
+			"tag",
+			"include <",
+			".hpp>",
+			"<xercesc.*>",
+			"div",
+			"body",
+			"u95",
+			"getele",
+			"top",
+			"autosave",
+			"sitetitle",
+			"我的",
+			"edit",
+			"file",
+			"0px",
+			"bottom",
+			"img src",
+			"img",
+			"alt",
+			"relative",
+			"center",
+			"middle",
+			"img src",
+			"margin-top",
+			"size",
+			"inst",
+			"signex",
+			"sign",
+			"alusrc",
+			"memwrite",
+			"memread",
+			"%",
+			"$",
+			"%",
+			" #",
+			"\\*",
+			"fib",
+			"hg",
+			"nl",
+			"error",
+			"device",
+			"lan_port",
+			"local_network",
+			"ipq_handle",
+			"message_type",
+			"scr_port",
+			"scr_ip",
+			"hold",
+			"sockadd",
+			"table",
+			"port_t",
+			"valid",
+			"NAT_table",
+			"NAT_entry",
+			"\\*",
+			"borrowLimit",
+			"\\$",
+			"borrowLimit",
+			"\\$",
+			"$",
+			"borrowNumt",
+			"returnNumt",
+			"holdNumt",
+			"namet",
+			"borrowLimit",
+			"borrowNum",
+			"returnNum",
+			"holdNum",
+			"&",
+			"char name",
+			"\\*[a-z]",
+			"add_dic",
+			"clear",
+			"1773:",
+			"1772:",
+			"1772",
+			"177",
+			"clear",
+			"[a-z0-9]{2}:",
+			"f7[a-z0-9]{2}:",
+			"f7[a-z,0-9]{2}:",
+			"!!!!",
+			"bf",
+			"!!!!",
+			"78(120)",
+			"78",
+			"ec",
+			"!!!!",
+			"line [0-9]{3}:",
+			"symtabpos",
+			"nextMove",
+			"nextColumn",
+			"code_size",
+			"ALU(",
+			"waddr",
+			"aluop",
+			"halt",
+			"zero",
+			"ALUOp",
+			"temp",
+			"PCAddr",
+			"memaddr",
+			"ALUdata1",
+			"ALUdata2",
+			"jump",
+			"memread",
+			"RegdataB",
+			"aLUdata1"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"OUT-FILENAME"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "app.js",
+					"settings":
+					{
+						"buffer_size": 1743,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								946,
+								946
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 849.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "public/index.html",
+					"settings":
+					{
+						"buffer_size": 2011,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1322,
+								1322
+							]
+						],
+						"settings":
+						{
+							"auto_name": "<!DOCTYPE html>",
+							"syntax": "Packages/HTML/HTML.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 412.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 35.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"",
+				"untitled"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 247.0,
+	"status_bar_visible": true
+}
