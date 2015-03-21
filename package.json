@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "font-awesome": "^4.3.0",
-    "googleapis": "^1.1.5"
+    "googleapis": "^1.1.5",
+    "mongodb": "^1.4.34",
+    "mongoose": "^3.8.25"
   }
 }
