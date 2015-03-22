@@ -31,13 +31,13 @@ exports.deleteUser = function (name, callback){
 	});
 };
 
-exports.init = function(name, callback){
+exports.initDir = function(name, callback){
 	var root = new File({name: "root", type: "dir", children: []});
 	var entry = new FileSystem({name: name, root: root._id});
 	entry.save(function(err){
-		if (err) callback(err, null);
+		if (err) callback(err, root);
 		root.save(function(err){
-			callback(err, null);
+			callback(err, root);
 		})
 	});
 }
@@ -52,6 +52,7 @@ exports.listFiles = function(id, callback){
 	File.findById(id, function(err, file){
 		if (err) callback(err, file);
 		else{
+			console.log(file);
 			// add details to children
 			var query = [];
 			for (var i = 0; i < file.children.length; i++) query.push(file.children[i]._id);
@@ -63,11 +64,10 @@ exports.listFiles = function(id, callback){
 }
 
 exports.createFolder = function (dirName, id, callback){
-	File.find({_id: id}, function(err, file){
+	File.findById(id, function(err, file){
 		var newFolder = new File({name: dirName, type: "dir", children: []});
-		
-		file[0].children.push(newFolder._id);
-		File.findByIdAndUpdate(id, file[0], function(err){
+		file.children.push(newFolder._id);
+		File.findByIdAndUpdate(id, file, function(err){
 			if (err) callback(err, null);
 			newFolder.save(function(err){
 				callback(err, newFolder);

@@ -2,12 +2,16 @@ var models = require('../models/models.js');
 var express = require('express');
 var app = express.Router();
 
-app.get('/init', function (req, res){
-	models.init(req.query.uid, function(err, ret){
+// IN: uid
+// OUT: err, root
+app.get('/initDir', function (req, res){
+	models.initDir(req.query.uid, function(err, ret){
 		res.send({err: err, ret: ret});
 	});
 });
 
+// IN: uid
+// OUT: err, [Files]
 app.get('/getRoot', function (req, res){
 	console.log("Query = " + req.query.uid);
 	models.getRoot(req.query.uid, function(err, root){
@@ -21,14 +25,18 @@ app.get('/getRoot', function (req, res){
 	});
 });
 
+// IN: fileid
+// OUT: err, [Files]
 app.get('/lsDir', function(req, res){
-	models.listFiles(req.query.fileId, function(err, file){
+	models.listFiles(req.query.fileid, function(err, file){
 		res.send({err: err, file: file});
 	});
 });
 
+// IN: name, fileid
+// OUT: err, newFolder
 app.get('/createDir', function (req, res){
-	models.createFolder(req.query.name, req.query.fileId, function(err, file){
+	models.createFolder(req.query.name, req.query.fileid, function(err, file){
 		res.send({err: err, file: file});
 	});
 });
