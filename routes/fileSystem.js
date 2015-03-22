@@ -18,7 +18,7 @@ app.get('/getRoot', function (req, res){
 });
 
 app.get('/lsDir', function(req, res){
-	models.listFiles(req.query.name, function(err, file){
+	models.listFiles(req.query.id, function(err, file){
 		res.write(err, file);
 	});
 });
