@@ -77,17 +77,16 @@ exports.createFolder = function (dirName, id, callback){
 	});
 };
 
-exports.listGoogle = function(name, callback){
+exports.uploadFile = function(name, files, callback){
 	Token.findOne({name: name}, function(err, entry){
-		googleapis.listFile(entry.Token, function(err, resp, body){
-			callback(err, resp, body);
+		console.log(entry);
+		googleapis.uploadFile(entry.Token, files.attributes, function(err, reply){
+			callback(err, reply);
 		});
 	});
 }
 
-/*
-	The Testing function to dump the whole file structure
-*/
+/* The Testing function to dump the whole file structure */
 function dumpStructure(id, prefix){
 	File.findById(id, function(err, file){
 		console.log(prefix + "Name: " + file.name + ", ID: " + id + ", Type: " + file.type);

@@ -1,6 +1,22 @@
 var models = require('../models/models.js');
 var express = require('express');
 var app = express.Router();
+var multer  = require('multer');
+var done = false;
+
+/*Configure the multer.*/
+app.use(multer({ dest: './uploads/',
+rename: function (fieldname, filename) {
+	return filename+Date.now();
+},
+onFileUploadStart: function (file) {
+  	//console.log(file.originalname + ' is starting ...')
+},
+onFileUploadComplete: function (file) {
+  	//console.log(file.fieldname + ' uploaded to  ' + file.path)
+  	done = true;
+}
+}));
 
 // IN: uid
 // OUT: err, root
@@ -39,6 +55,17 @@ app.get('/createDir', function (req, res){
 	models.createFolder(req.query.name, req.query.fileid, function(err, file){
 		res.send({err: err, file: file});
 	});
+});
+
+// IN: files, body.fileid
+// OUT: err, reply
+app.post('/uploadFile', function(req, res){
+	if(done==true){
+		models.uploadFile(req.body.uid, req.files, function(err, reply){
+			console.log(err);
+			console.log(reply);
+		});
+	}
 });
 
 module.exports = app;
