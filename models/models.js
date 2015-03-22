@@ -37,28 +37,42 @@ exports.init = function(name, callback){
 	entry.save(function(err){
 		if (err) callback(err, null);
 		root.save(function(err){
-			callback(err, root._id);
+			callback(err, null);
 		})
 	});
 }
 
-exports.createFolder = function (name, id, callback){
+exports.getRoot = function(name, callback){
+	FileSystem.findOne({name: name}, function(err, root){
+		callback(err, root);
+	});
+}
+
+exports.createFolder = function (dirName, id, callback){
 	File.find({_id: id}, function(err, file){
-		var newFolder = new File({name: name, type: "dir", children: []});
+		var newFolder = new File({name: dirName, type: "dir", children: []});
 		
 		file[0].children.push(newFolder._id);
 		File.findByIdAndUpdate(id, file[0], function(err){
 			if (err) callback(err, null);
 			newFolder.save(function(err){
-				console.log(file);
-				callback(err, newFolder._id);
+				callback(err, newFolder);
 			});
 		});
 	});
 };
 
+exports.listFiles = function(id, callback){
+	File.findById(id, function(err, file){
+		callback(err, file);
+	});
+}
+
+/*
+	The Testing function to dump the whole file structure
+*/
+
 function dumpStructure(id, prefix){
-	//console.log(id);
 	File.findById(id, function(err, file){
 		//console.log("File: ");
 		//console.log(file);

@@ -4,6 +4,7 @@ var express = require('express'),
 
 var authAPIRouter = require('./routes/auth.api.js'),
 	frontEndRouter = require('./routes/frontend.js');
+	fileSystemRouter = require('./routes/fileSystem.js');
 
 
 var app = express();
@@ -13,7 +14,9 @@ app.set('view engine', 'handlebars');
 app.use(express.static('public'));
 app.use('/node_modules', express.static('node_modules'))
 
+
 app.use('/', authAPIRouter());
+app.use('/fs', fileSystemRouter());
 app.use('/', frontEndRouter());
 
 
