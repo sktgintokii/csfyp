@@ -1,0 +1,185 @@
+<nav class="navbar navbar-default">
+	<div id="page-header" class="container-fluid">
+
+
+	<ul class="nav navbar-nav navbar-left">
+		<li id="opr-dropdown" class="dropdown">
+  			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  				<i class="fa fa-bars"></i>
+  			</a>
+		
+			<ul class="dropdown-menu" role="menu">
+				<li>
+					<a href="#">
+						<i class="fa fa-folder-open"></i>Create folder
+					</a>
+				</li>
+				<li>
+					<a href="#" data-toggle="modal" data-target="#upload-modal">
+						<i class="fa fa-download"></i>Upload file(s)
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class="fa fa-server"></i>Drives details
+					</a>
+				</li>
+
+				<li class="divider"></li>
+				<li><a href="#">Separated link</a></li>
+			</ul>
+		</li>
+	</ul>
+	<span class="navbar-brand">Merged Drives</span>
+
+	<ul class="nav navbar-nav navbar-right pull-right">
+		<li id="header-user-menu" class="dropdown">
+			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+				<span id="User-name">Jim Ng</span>
+				<span class="caret"></span>
+			</a>
+			<ul id="user-opt" class="dropdown-menu" role="menu">
+				<li>
+					<a href="#" data-toggle="modal" data-target="#config-modal">
+						<i class="fa fa-folder-open"></i>Configuration
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class="fa fa-download"></i>Option2
+					</a>
+				</li>
+				<li>
+					<a href="#">
+						<i class="fa fa-server"></i>Option3
+					</a>
+				</li>
+
+				<li class="divider"></li>
+				<li>
+					<a href="#" id="logout-opt">Logout</a>
+				</li>
+			</ul>
+
+		</li>
+	</ul>
+	</div>
+</nav>
+
+
+
+<div id="main" class="container-fluid">
+	<div class="container col-xs-3">
+		<div class="panel panel-info">
+			<div class="panel-heading">
+				location
+			</div>
+			<div class="panel-body">
+				<ul class="nav nav-pills nav-stacked">
+					<li>
+						<a href="#">Favourite1</a>
+					</li>
+					<li>
+						<a href="#">Favourite2</a>
+					</li>
+				</ul>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="col-xs-9">
+		<ol id="path-crum" class="breadcrumb">
+			<li>
+				<a href="">Root</a>
+			</li>
+			<li>
+				<a href="">dir1</a>
+			</li>
+		</ol>
+
+		<div class="container-fluid">
+			<!-- Table -->
+			<table id="file-list" class="table text-center">
+				<thead class="panel-heading">
+					<tr>
+						<td>Name</td>
+						<td>Type</td>
+						<td>Last Modified</td>
+						<td>File size</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Google chrome.exe</td>
+						<td>file</td>
+						<td>13 Feb, 2014</td>
+						<td>1.5MB</td>
+					</tr>
+					<tr>
+						<td>New Text document.txt</td>
+						<td>file</td>
+						<td>13 Feb, 2014</td>
+						<td>1.5KB</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+
+
+	</div>
+</div>
+
+<!-- Modals put here-->
+<div class="modal" id="upload-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">Upload file</h4>
+			</div>
+			<div class="modal-body">
+				<form id="upload-form" class="form-group" enctype="multipart/form-data" action="/drive/api/upload">
+					<label for="upload">File(s) to upload</label>
+					<input type="file" id="upload" multiple/>
+				</form>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" data-dismiss="modal">Confirm</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal" id="config-modal" tabindex="-1" role="dialog" aria-labelledby="config-modal-label" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">Configuration</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div class="col-xs-3">
+
+					</div>
+
+					<div class="col-xs-9">
+						132
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>

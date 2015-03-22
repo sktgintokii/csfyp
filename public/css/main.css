@@ -16,3 +16,7 @@
 .navbar-nav.pull-right{
 	margin-right: 10px;
 }
+
+#logout-form{
+	display: none;
+}
