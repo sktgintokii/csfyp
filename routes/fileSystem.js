@@ -4,16 +4,18 @@ var app = express.Router();
 
 app.get('/init', function (req, res){
 	models.init(req.query.uid, function(err, ret){
-		res.write({err: err, ret: ret});
+		res.send({err: err, ret: ret});
 	});
 });
 
 app.get('/getRoot', function (req, res){
-	models.getRoot(req.query.uid, function(err, rootId){
-		if (err) res.write({err: err, file: null});
+	console.log("Query = " + req.query.uid);
+	models.getRoot(req.query.uid, function(err, root){
+		if (err) res.status(400).json({'err': err}).end();
 		else{
-			models.listFiles(rootId, function(err, file){
-				res.write({err: err, file: file});
+			models.listFiles(root.root, function(err, file){
+				if (err) res.status(400).json({'err': err}).end();
+				else res.json(file).end();
 			});
 		}
 	});
@@ -21,13 +23,13 @@ app.get('/getRoot', function (req, res){
 
 app.get('/lsDir', function(req, res){
 	models.listFiles(req.query.fileId, function(err, file){
-		res.write({err: err, file: file});
+		res.send({err: err, file: file});
 	});
 });
 
 app.get('/createDir', function (req, res){
 	models.createFolder(req.query.name, req.query.fileId, function(err, file){
-		res.write({err: err, file: file});
+		res.send({err: err, file: file});
 	});
 });
 

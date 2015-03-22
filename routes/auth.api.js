@@ -104,7 +104,7 @@ module.exports = function (){
 				}
 			});
 */
-		if (req.body.username === 'jim' && req.body.password === '123'){
+		if (req.body.username === 'Jim' && req.body.password === '123'){
 			req.session.regenerate(function(err){
 				req.session.username = req.body.username;
 				req.session.user = 1;

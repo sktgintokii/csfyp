@@ -48,6 +48,20 @@ exports.getRoot = function(name, callback){
 	});
 }
 
+exports.listFiles = function(id, callback){
+	File.findById(id, function(err, file){
+		if (err) callback(err, file);
+		else{
+			// add details to children
+			var query = [];
+			for (var i = 0; i < file.children.length; i++) query.push(file.children[i]._id);
+			File.find({"_id": { $in: query}}, function(err, children){
+				callback(err, children);
+			});
+		}
+	});
+}
+
 exports.createFolder = function (dirName, id, callback){
 	File.find({_id: id}, function(err, file){
 		var newFolder = new File({name: dirName, type: "dir", children: []});
@@ -62,20 +76,11 @@ exports.createFolder = function (dirName, id, callback){
 	});
 };
 
-exports.listFiles = function(id, callback){
-	File.findById(id, function(err, file){
-		callback(err, file);
-	});
-}
-
 /*
 	The Testing function to dump the whole file structure
 */
-
 function dumpStructure(id, prefix){
 	File.findById(id, function(err, file){
-		//console.log("File: ");
-		//console.log(file);
 		console.log(prefix + "Name: " + file.name + ", ID: " + id + ", Type: " + file.type);
 		for (var i = 0; i < file.children.length; i++){
 			dumpStructure(file.children[i]._id, prefix + "--");
