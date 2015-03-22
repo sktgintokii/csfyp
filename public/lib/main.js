@@ -13,8 +13,8 @@ function getQueryString() {
 function init(){
 	var dir = getQueryString()['dir'];
 
-	if (dir === 'undefined'){
-		var uid = document.querySelector('#user-id');
+	if (dir === undefined){
+		var uid = document.querySelector('#user-id').innerHTML;
 		superagent
 			.get('/fs/getRoot')
 			.query({uid: uid})
