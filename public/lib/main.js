@@ -22,7 +22,7 @@ function init(){
 				if (err){
 					console.log(err);
 				} else {
-
+					console.log(res);
 				}
 
 			});
@@ -34,7 +34,7 @@ function init(){
 				if (err){
 					console.log(err);
 				} else {
-
+					console.log(res);
 				}
 			})
 	}

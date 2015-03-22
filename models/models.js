@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var googleapis = require('./googleapis.js');
 mongoose.connect('mongodb://localhost:27017/fyp');
 
 
@@ -11,6 +12,7 @@ var fsSchema = Schema({
 });
 File = mongoose.model('file', fsSchema);
 FileSystem = mongoose.model('FileSystem', {name: String, root: Schema.Types.ObjectId});
+Token = mongoose.model('Token', {name: String, Token: Schema.Types.Mixed});
 
 exports.createUser = function (name, pw, callback){
 	var user = new User({name: name, pw: pw});
@@ -52,7 +54,6 @@ exports.listFiles = function(id, callback){
 	File.findById(id, function(err, file){
 		if (err) callback(err, file);
 		else{
-			console.log(file);
 			// add details to children
 			var query = [];
 			for (var i = 0; i < file.children.length; i++) query.push(file.children[i]._id);
@@ -75,6 +76,14 @@ exports.createFolder = function (dirName, id, callback){
 		});
 	});
 };
+
+exports.listGoogle = function(name, callback){
+	Token.findOne({name: name}, function(err, entry){
+		googleapis.listFile(entry.Token, function(err, resp, body){
+			callback(err, resp, body);
+		});
+	});
+}
 
 /*
 	The Testing function to dump the whole file structure
