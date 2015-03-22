@@ -2,7 +2,7 @@ var models = require('../models/models.js');
 
 app.get('/init', function (req, res){
 	models.init(req.query.name, function(err, ret){
-		res.write(err, ret);
+		res.write({err: err, ret: ret});
 	});
 });
 
@@ -19,7 +19,7 @@ app.get('/getRoot', function (req, res){
 
 app.get('/lsDir', function(req, res){
 	models.listFiles(req.query.id, function(err, file){
-		res.write(err, file);
+		res.write({err: err, file: file});
 	});
 });
 
