@@ -20,13 +20,13 @@ app.get('/getRoot', function (req, res){
 });
 
 app.get('/lsDir', function(req, res){
-	models.listFiles(req.query.id, function(err, file){
+	models.listFiles(req.query.fileId, function(err, file){
 		res.write({err: err, file: file});
 	});
 });
 
 app.get('/createDir', function (req, res){
-	models.createFolder(req.query.name, req.query.id, function(err, file){
+	models.createFolder(req.query.name, req.query.fileId, function(err, file){
 		res.write({err: err, file: file});
 	});
 });
