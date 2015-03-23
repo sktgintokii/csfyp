@@ -25,9 +25,10 @@ Template of attributes
 exports.uploadFile = function (accessToken, attributes, callback){
 	oauth2Client.setCredentials(accessToken);
 	oauth2Client.refreshAccessToken(function(err, tokens) {
+
 		var drive = google.drive({ version: 'v2', auth: oauth2Client });
 
-		fs.readFile(attributes.path, 'UTF-8', function (err, data){
+		fs.readFile(attributes.path, function (err, data){
 			if (err) callback(err, null);
 			else{
 				drive.files.insert({

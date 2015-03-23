@@ -8,11 +8,13 @@ User = mongoose.model('users', {name: String, pw: String});
 var fsSchema = Schema({
 	name: String,
 	type: String,
+	did: String, // id in cloud drive(only for non-dir)
+	drive: Schema.Types.ObjectId, // cloud drive id(only for non-dir)
 	children: [{id: Schema.Types.ObjectId}]
 });
 File = mongoose.model('file', fsSchema);
 FileSystem = mongoose.model('FileSystem', {name: String, root: Schema.Types.ObjectId});
-Token = mongoose.model('Token', {name: String, Token: Schema.Types.Mixed});
+Token = mongoose.model('Token', {name: String, platform: String, Token: Schema.Types.Mixed});
 
 exports.createUser = function (name, pw, callback){
 	var user = new User({name: name, pw: pw});
@@ -94,10 +96,26 @@ exports.createFolder = function (dirName, id, callback){
 /* Still under testing, don't use it */
 exports.uploadFile = function(name, files, callback){
 	Token.findOne({name: name}, function(err, entry){
-		console.log(entry);
-		googleapis.uploadFile(entry.Token, files.attributes, function(err, reply){
-			callback(err, reply);
-		});
+		if (err) callback(err, entry);
+		else if (entry == null) callback("Access tokens not found", entry);
+		else{
+			console.log("In Google we trust!");
+			console.log(entry.platform);
+			console.log(entry);
+			if (entry.platform == 'Google'){
+				googleapis.uploadFile(entry.Token, files.attributes, function(err, reply){
+					if (err) callback(err, reply);
+					else{
+						var newFile = new File({name: files.attributes.originalname, type: "file", did: entry._id, drive: entry._id, children: []});
+						newFile.save(function(err){
+							callback(err, reply);
+						});
+					}
+				});
+			}else if (entry.platform == 'Dropbox'){
+				// TODO: Handle Dropbox upload request
+			}
+		}
 	});
 }
 
