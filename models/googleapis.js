@@ -47,3 +47,16 @@ exports.uploadFile = function (accessToken, attributes, callback){
 		});
 	});
 };
+
+// to get data of the file in google drive(e.g. download link, size, ...)
+// id provided by Google Drive
+exports.queryFile = function(accessToken, id, callback){
+	oauth2Client.setCredentials(accessToken);
+	oauth2Client.refreshAccessToken(function(err, tokens) {
+		var drive = google.drive({ version: 'v2', auth: oauth2Client });
+
+		drive.files.get({fileId: id}, function(err, reply){
+			callback(err, reply);
+		});
+	});
+}

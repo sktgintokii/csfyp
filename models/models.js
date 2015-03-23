@@ -39,7 +39,6 @@ exports.initDir = function(name, callback){
 	var root = new File({name: "root", type: "dir", children: []});
 	var entry = new FileSystem({name: name, root: root._id});
 	FileSystem.findOne({name: name}, function(err, user){
-		console.log(user);
 		if (err) callback(err, null);
 		else if (user != null) callback("duplicate uid", null);
 		else{
@@ -61,8 +60,8 @@ exports.getRoot = function(name, callback){
 	});
 }
 
-exports.listFiles = function(id, callback){
-	File.findById(id, function(err, file){
+exports.listFiles = function(fileid, callback){
+	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
 		else{
@@ -93,7 +92,6 @@ exports.createFolder = function (dirName, fileid, callback){
 	});
 };
 
-/* Still under testing, don't use it */
 exports.uploadFile = function(name, fileid, files, callback){
 	// Find the accesstoken out from Token database
 	Token.findOne({name: name}, function(err, entry){
@@ -106,11 +104,10 @@ exports.uploadFile = function(name, fileid, files, callback){
 					if (err) callback(err, reply);
 					else{
 						// Find out the directory by fileid
-						console.log(reply);
 						File.findById(fileid, function(err, dir){
-							console.log(dir);
 							if (err) callback(err, dir);
 							else if (dir == null) callback("ID not found", null);
+							else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
 							else{
 								// create the new file and add perform add children
 								var newFile = new File({name: files.attributes.originalname, type: "file", did: reply.id, drive: entry._id, children: []});
@@ -128,6 +125,26 @@ exports.uploadFile = function(name, fileid, files, callback){
 			}else if (entry.platform == 'Dropbox'){
 				// TODO: Handle Dropbox upload request
 			}
+		}
+	});
+}
+
+exports.generateDownloadLink = function(name, fileid, callback){
+	Token.findOne({name: name}, function(err, entry){
+		if (err) callback(err, entry);
+		else if (entry == null) callback("Access tokens not found", entry);
+		else{
+			File.findById(fileid, function(err, file){
+				if (err) callback(err, file);
+				else if (file == null) callback("ID not found", null);
+				else if (file.type == "dir") callback("Cannot download a directory", null);
+				else if (file.did == undefined) callback("No Drive File ID found", null);
+				else{
+					googleapis.queryFile(entry.Token, file.did, function(err, reply){
+						callback(err, reply.webContentLink);
+					});
+				}
+			});
 		}
 	});
 }
