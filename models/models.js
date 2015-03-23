@@ -61,6 +61,7 @@ exports.getRoot = function(name, callback){
 exports.listFiles = function(id, callback){
 	File.findById(id, function(err, file){
 		if (err) callback(err, file);
+		else if (file == null) callback("ID not found", null);
 		else{
 			// add details to children
 			var query = [];
@@ -74,14 +75,18 @@ exports.listFiles = function(id, callback){
 
 exports.createFolder = function (dirName, id, callback){
 	File.findById(id, function(err, file){
-		var newFolder = new File({name: dirName, type: "dir", children: []});
-		file.children.push(newFolder._id);
-		File.findByIdAndUpdate(id, file, function(err){
-			if (err) callback(err, null);
-			newFolder.save(function(err){
-				callback(err, newFolder);
+		if (err) callback(err, file);
+		else if (file == null) callback("ID not found", null);
+		else{
+			var newFolder = new File({name: dirName, type: "dir", children: []});
+			file.children.push(newFolder._id);
+			File.findByIdAndUpdate(id, file, function(err){
+				if (err) callback(err, null);
+				newFolder.save(function(err){
+					callback(err, newFolder);
+				});
 			});
-		});
+		}
 	});
 };
 
