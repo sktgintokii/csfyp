@@ -14,21 +14,18 @@ function init(){
 	var dir = getQueryString()['dir'];
 //var array = [{name: 'chrome', type: 'exe'}, {name: 'ff', type: 'folder'}];
 
+	var display() = function (array){
+		var content = '';
+			for (var i = 0; i < array.length; i++){
+				var file = array[i];
+				content += '<tr tabindex="0">' +
+						'<td>' + file.name + '</td>' +
+						'<td>' + file.type + '</td>' +
+						'</tr>';
+			}
+		document.querySelector('#file-list > tbody').innerHTML = content;		
+	}
 
-	var content = '';
-		for (var i = 0; i < array.length; i++){
-			var file = array[i];
-			content += '<tr tabindex="0">' +
-					'<td>' + file.name + '</td>' +
-					'<td>' + file.type + '</td>' +
-					'</tr>';
-		}
-	document.querySelector('#file-list > tbody').innerHTML += content;
-
-
-
-
-/*
 	if (dir === undefined){
 		var uid = document.querySelector('#user-id').innerHTML;
 		superagent
@@ -38,7 +35,7 @@ function init(){
 				if (err){
 					alert(err);
 				} else {
-					display(res.body);
+					display(res.body.children);
 				}
 
 			});
@@ -50,11 +47,11 @@ function init(){
 				if (err){
 					alert(err);
 				} else {
-					display(res.body);
+					display(res.body.children);
 				}
 			})
 	}
-*/
+
 	
 };
 
