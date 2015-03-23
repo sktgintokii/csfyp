@@ -64,7 +64,7 @@ exports.listFiles = function(fileid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
-		else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
+		else if (file.type != "dir") callback("Cannot list a non-directory", null);
 		else{
 			// add details to children
 			var query = [];
@@ -80,7 +80,7 @@ exports.createFolder = function (dirName, fileid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
-		else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
+		else if (file.type != "dir") callback("Cannot upload file to a non-directory", null);
 		else{
 			var newFolder = new File({name: dirName, type: "dir", children: []});
 			file.children.push(newFolder._id);
