@@ -1,9 +1,3 @@
-function forEach(array, callback) {
-	for (var i = 0; i < array.length; i++){
-		callback(array[i]);
-	}
-}
-
 function getQueryString() {
   	var result = {}, queryString = location.search.slice(1),
       re = /([^&=]+)=([^&]*)/g, m;
@@ -18,12 +12,23 @@ function getQueryString() {
 
 function init(){
 	var dir = getQueryString()['dir'];
+//var array = [{name: 'chrome', type: 'exe'}, {name: 'ff', type: 'folder'}];
 
 
-	var display = function(list){
+	var content = '';
+		for (var i = 0; i < array.length; i++){
+			var file = array[i];
+			content += '<tr tabindex="0">' +
+					'<td>' + file.name + '</td>' +
+					'<td>' + file.type + '</td>' +
+					'</tr>';
+		}
+	document.querySelector('#file-list > tbody').innerHTML += content;
 
-	};
 
+
+
+/*
 	if (dir === undefined){
 		var uid = document.querySelector('#user-id').innerHTML;
 		superagent
@@ -49,7 +54,7 @@ function init(){
 				}
 			})
 	}
-
+*/
 	
 };
 
@@ -69,7 +74,8 @@ function fileListClickHandler(e){
 
 function fileListDblClickHandler(e){
 	e.preventDefault();
-	alert('132');
+	// TODO redirect to next page
+	console.log("")
 }
 
 function logoutHandler(e){
