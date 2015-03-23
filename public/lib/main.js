@@ -1,3 +1,5 @@
+var dir, uid;
+
 function getQueryString() {
   	var result = {}, queryString = location.search.slice(1),
       re = /([^&=]+)=([^&]*)/g, m;
@@ -9,56 +11,90 @@ function getQueryString() {
   	return result;
 }
 
+function setCurrentDir(dir){
+	document.querySelector('#file-list').setAttribute("fileid", dir);
+}
 
-function init(){
-	var dir = getQueryString()['dir'];
-//var array = [{name: 'chrome', type: 'exe'}, {name: 'ff', type: 'folder'}];
+function setRootId(err, res){
+	var rootId;
 
-	var display = function (array){
-		var content = '';
-			for (var i = 0; i < array.length; i++){
-				var file = array[i];
-				content += '<tr tabindex="0">' +
-						'<td>' + file.name + '</td>' +
-						'<td>' + file.type + '</td>' +
-						'</tr>';
-			}
-		document.querySelector('#file-list > tbody').innerHTML = content;		
+	if (err){
+		return console.log(err);
 	}
 
+	var ele = document.querySelector('#path-crum > li[aria-label="root"]');
+	ele.setAttribute("fileid", res.body._id);
+
+	if (dir === undefined) {
+		dir = res.body._id;
+	}
+	setCurrentDir(dir);
+}
+
+function showFileList(err, res){
+	if (err){
+		return console.log(err);
+	} 
+		
+	var array = res.body.dir;
+	var content = '';
+
+	for (var i = 0; i < array.length; i++){
+		var file = array[i];
+
+
+		content += '<tr tabindex="0" fileid="' + file._id + '">' +
+				'<td aria-label="name">' + file.name + '</td>' +
+				'<td aria-label="type">' + file.type + '</td>' +
+				'</tr>';
+	}
+	document.querySelector('#file-list > tbody').innerHTML = content;
+	[].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);	
+}
+
+function init(){
+	dir = getQueryString()['dir'];
+	uid = document.querySelector('#user-id').innerHTML;
+
 	if (dir === undefined){
-		var uid = document.querySelector('#user-id').innerHTML;
 		superagent
 			.get('/fs/getRoot')
 			.query({uid: uid})
-			.end(function (err, res){
-				if (err){
-					alert(err);
-				} else {
-					display(res.body.dir);
-				}
-
-			});
+			.end(showFileList);
 	} else {
+		setCurrentDir(dir);
 		superagent
 			.get('/fs/lsDir')
 			.query({fileid: dir})
-			.end(function (err, res){
-				if (err){
-					alert(err);
-				} else {
-					display(res.body.dir);
-				}
-			})
+			.end(showFileList);
 	}
 
-	
+	superagent
+		.get('/fs/getRootId')
+		.query({uid: uid})
+		.end(setRootId);
 };
 
-function fileListHandler(ele){
+//----------------List of Event Handlers-------------------
+function createFolderHandler(e){
+	e.preventDefault();
+
+	superagent
+		.get('/fs/getRoot')
+		.query({uid: uid})
+		.end(function (err, res){
+			if (err){
+				alert(err);
+			} else {
+				showFileList(res.body.dir);
+			}
+
+		});
+}
+
+function fileListHandlers(ele){
 	//ele.addEventListener("click", fileListClickHandler);
 	ele.addEventListener("dblclick", fileListDblClickHandler);
-
 }
 
 function fileListClickHandler(e){
@@ -71,8 +107,16 @@ function fileListClickHandler(e){
 
 function fileListDblClickHandler(e){
 	e.preventDefault();
+
 	// TODO redirect to next page
-	console.log("")
+	var type = this.querySelector('td[aria-label="type"]').innerHTML;
+	var dest = "/?dir=" + this.getAttribute("fileid");
+
+	if (type === "dir"){
+		location.replace(dest);
+	} else {
+		console.log("123", dest);
+	}
 }
 
 function logoutHandler(e){
@@ -86,10 +130,12 @@ function logoutHandler(e){
 	form.submit();
 }
 
+//---------------------  Start of execution of main.js -----------------
 init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
+document.querySelector('#create-folder-opt').addEventListener("click", createFolderHandler);
 
-[].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandler);
+[].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
 
 
 
