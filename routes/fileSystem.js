@@ -19,7 +19,7 @@ onFileUploadComplete: function (file) {
 }));
 
 // IN: uid
-// OUT: err, root
+// OUT: err, ret
 app.get('/initDir', function (req, res){
 	models.initDir(req.query.uid, function(err, ret){
 		res.send({err: err, ret: ret});
@@ -27,33 +27,42 @@ app.get('/initDir', function (req, res){
 });
 
 // IN: uid
-// OUT: err, [Files]
+// OUT: err, dir
 app.get('/getRoot', function (req, res){
 	console.log("Query = " + req.query.uid);
 	models.getRoot(req.query.uid, function(err, root){
-		if (err) res.status(400).json({'err': err}).end();
+		if (err) res.status(400).json({err: err, dir: null}).end();
 		else{
-			models.listFiles(root.root, function(err, file){
-				if (err) res.status(400).json({'err': err}).end();
-				else res.json(file).end();
+			models.listFiles(root.root, function(err, dir){
+				if (err) res.status(400).json({err: err, dir: null}).end();
+				else res.send({err: err, dir: dir});
 			});
 		}
 	});
 });
 
+// IN: uid
+// OUT: err, _id
+app.get('/getRootId', function(req, res){
+	models.getRoot(req.query.uid, function(err, root){
+		if (err) res.status(400).json({'err': err, _id: null}).end();
+		else res.send({_id: root.root, err: null});
+	});
+})
+
 // IN: fileid
-// OUT: err, [Files]
+// OUT: err, dir
 app.get('/lsDir', function(req, res){
 	models.listFiles(req.query.fileid, function(err, file){
-		res.send({err: err, file: file});
+		res.send({err: err, dir: file});
 	});
 });
 
 // IN: name, fileid
-// OUT: err, newFolder
+// OUT: err, dir
 app.get('/createDir', function (req, res){
-	models.createFolder(req.query.name, req.query.fileid, function(err, file){
-		res.send({err: err, file: file});
+	models.createFolder(req.query.name, req.query.fileid, function(err, dir){
+		res.send({err: err, dir: dir});
 	});
 });
 
