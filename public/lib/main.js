@@ -16,32 +16,45 @@ function setCurrentDir(dir){
 }
 
 function setRootId(err, res){
-	var rootId;
-
-	if (err){
-		return console.log(err);
-	}
-
-	var ele = document.querySelector('#path-crum > li[aria-label="root"]');
-	ele.setAttribute("fileid", res.body._id);
+	var error = err || res.body.err;
+	if (error)
+		return console.log(error);
 
 	if (dir === undefined) {
 		dir = res.body._id;
+		setCurrentDir(dir);
 	}
-	setCurrentDir(dir);
+	
+}
+
+function setPathCrum(err, res){
+	var error = err || res.body.err;
+	if (error)
+		return console.log(error);
+
+	var ancestors = res.body.ancestor;
+
+	console.log(res.body);
+	var content = '';
+	for (var i = 0; i < ancestors.length; i++){
+		var anc = ancestors[i];
+		content += '\n<li>' +
+					'<a href="/?dir=' + anc._id + '">'+
+					anc.name + '</a>\n</li>';
+	};
+	document.querySelector('#path-crum').innerHTML = content;
 }
 
 function showFileList(err, res){
-	if (err){
-		return console.log(err);
-	} 
+	var error = err || res.body.err;
+	if (error)
+		return console.log(error); 
 		
 	var array = res.body.dir;
 	var content = '';
 
 	for (var i = 0; i < array.length; i++){
 		var file = array[i];
-
 
 		content += '<tr tabindex="0" fileid="' + file._id + '">' +
 				'<td aria-label="name">' + file.name + '</td>' +
@@ -61,18 +74,32 @@ function init(){
 			.get('/fs/getRoot')
 			.query({uid: uid})
 			.end(showFileList);
+
+		superagent
+			.get('/fs/getRootId')
+			.query({uid: uid})
+			.end(function (err, res){
+				setRootId(err, res);
+				superagent
+					.get('/fs/getAncestor')
+					.query({fileid: dir})
+					.end(setPathCrum);
+			});
+
 	} else {
 		setCurrentDir(dir);
 		superagent
 			.get('/fs/lsDir')
 			.query({fileid: dir})
 			.end(showFileList);
+		superagent
+			.get('/fs/getAncestor')
+			.query({fileid: dir})
+			.end(setPathCrum);
+			
 	}
 
-	superagent
-		.get('/fs/getRootId')
-		.query({uid: uid})
-		.end(setRootId);
+
 };
 
 //----------------List of Event Handlers-------------------
@@ -115,7 +142,8 @@ function fileListDblClickHandler(e){
 	if (type === "dir"){
 		location.replace(dest);
 	} else {
-		console.log("123", dest);
+		// TODO: show file details
+		console.log("dblclick non-folder");
 	}
 }
 
