@@ -54,7 +54,8 @@ exports.initDir = function(name, callback){
 
 exports.getRoot = function(name, callback){
 	FileSystem.findOne({name: name}, function(err, root){
-		callback(err, root);
+		if (root == null) callback("uid not found", null);
+		else callback(err, root);
 	});
 }
 
@@ -90,6 +91,7 @@ exports.createFolder = function (dirName, id, callback){
 	});
 };
 
+/* Still under testing, don't use it */
 exports.uploadFile = function(name, files, callback){
 	Token.findOne({name: name}, function(err, entry){
 		console.log(entry);
