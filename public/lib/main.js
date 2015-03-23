@@ -1,3 +1,9 @@
+function forEach(array, callback) {
+	for (var i = 0; i < array.length; i++){
+		callback(array[i]);
+	}
+}
+
 function getQueryString() {
   	var result = {}, queryString = location.search.slice(1),
       re = /([^&=]+)=([^&]*)/g, m;
@@ -13,6 +19,11 @@ function getQueryString() {
 function init(){
 	var dir = getQueryString()['dir'];
 
+
+	var display = function(list){
+
+	};
+
 	if (dir === undefined){
 		var uid = document.querySelector('#user-id').innerHTML;
 		superagent
@@ -20,9 +31,9 @@ function init(){
 			.query({uid: uid})
 			.end(function (err, res){
 				if (err){
-					console.log(err);
+					alert(err);
 				} else {
-					console.log(res);
+					display(res.body);
 				}
 
 			});
@@ -32,15 +43,34 @@ function init(){
 			.query({fileid: dir})
 			.end(function (err, res){
 				if (err){
-					console.log(err);
+					alert(err);
 				} else {
-					console.log(res);
+					display(res.body);
 				}
 			})
 	}
 
 	
 };
+
+function fileListHandler(ele){
+	//ele.addEventListener("click", fileListClickHandler);
+	ele.addEventListener("dblclick", fileListDblClickHandler);
+
+}
+
+function fileListClickHandler(e){
+	e.preventDefault();
+
+	$(this).siblings().removeClass("toggle");
+
+	this.classList.add("toggle");
+}
+
+function fileListDblClickHandler(e){
+	e.preventDefault();
+	alert('132');
+}
 
 function logoutHandler(e){
 	e.preventDefault();
@@ -55,3 +85,12 @@ function logoutHandler(e){
 
 init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
+
+[].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandler);
+
+
+
+
+
+
+
