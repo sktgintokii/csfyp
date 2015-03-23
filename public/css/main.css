@@ -20,3 +20,8 @@
 #logout-form{
 	display: none;
 }
+
+#file-list > tbody > tr:focus{
+	background-color: #757575;
+	color: white;
+}
