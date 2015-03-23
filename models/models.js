@@ -10,7 +10,8 @@ var fsSchema = Schema({
 	type: String,
 	did: String, // id in cloud drive(only for non-dir)
 	drive: Schema.Types.ObjectId, // cloud drive id(only for non-dir)
-	children: [{id: Schema.Types.ObjectId}]
+	children: [{id: Schema.Types.ObjectId}],
+	parent: Schema.Types.ObjectId
 });
 File = mongoose.model('file', fsSchema);
 FileSystem = mongoose.model('FileSystem', {name: String, root: Schema.Types.ObjectId});
@@ -36,7 +37,7 @@ exports.deleteUser = function (name, callback){
 };
 
 exports.initDir = function(name, callback){
-	var root = new File({name: "root", type: "dir", children: []});
+	var root = new File({name: "root", type: "dir", children: [], parent: null});
 	var entry = new FileSystem({name: name, root: root._id});
 	FileSystem.findOne({name: name}, function(err, user){
 		if (err) callback(err, null);
@@ -76,13 +77,36 @@ exports.listFiles = function(fileid, callback){
 	});
 }
 
+// recursive function to return list
+function getAncestor(fileid, callback){
+	File.findById(fileid, function(err, file){
+		if (err) callback(err, null);
+		else if (file == null) callback("Fail to get ancestor list(Pointer failure)", null);
+		else{
+			if (file.parent != null){
+				getAncestor(file.parent, function(err, ancestor){
+					ancestor.push(file);
+					callback(err, ancestor);
+				});
+			}
+			else callback(err, [file]);
+		}
+	});
+}
+
+exports.getAncestor = function(fileid, callback){
+	getAncestor(fileid, function(err, ancestor){
+		callback(err, ancestor);
+	});
+}
+
 exports.createFolder = function (dirName, fileid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
 		else if (file.type != "dir") callback("Cannot upload file to a non-directory", null);
 		else{
-			var newFolder = new File({name: dirName, type: "dir", children: []});
+			var newFolder = new File({name: dirName, type: "dir", children: [], parent: fileid});
 			file.children.push(newFolder._id);
 			File.findByIdAndUpdate(fileid, file, function(err){
 				if (err) callback(err, null);
@@ -112,7 +136,7 @@ exports.uploadFile = function(name, fileid, files, callback){
 							else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
 							else{
 								// create the new file and add perform add children
-								var newFile = new File({name: files.attributes.originalname, type: "file", did: reply.id, drive: entry._id, children: []});
+								var newFile = new File({name: files.attributes.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid});
 								dir.children.push(newFile._id);
 								File.findByIdAndUpdate(fileid, dir, function(err){
 									if (err) callback(err, null);
@@ -154,9 +178,11 @@ exports.getDownloadLink = function(name, fileid, callback){
 /* The Testing function to dump the whole file structure */
 function dumpStructure(id, prefix){
 	File.findById(id, function(err, file){
-		console.log(prefix + "Name: " + file.name + ", ID: " + id + ", Type: " + file.type);
-		for (var i = 0; i < file.children.length; i++){
-			dumpStructure(file.children[i]._id, prefix + "--");
+		if (file != null){
+			console.log(prefix + "Name: " + file.name + ", ID: " + id + ", Type: " + file.type);
+			for (var i = 0; i < file.children.length; i++){
+				dumpStructure(file.children[i]._id, prefix + "--");
+			}
 		}
 	});
 	

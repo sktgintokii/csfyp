@@ -58,6 +58,14 @@ app.get('/lsDir', function(req, res){
 	});
 });
 
+// IN: fileid
+// OUT: err, ancestor
+app.get('/getAncestor', function(req, res){
+	models.getAncestor(req.query.fileid, function(err, ancestor){
+		res.send({err: err, ancestor: ancestor});
+	});
+});
+
 // IN: name, fileid
 // OUT: err, dir
 app.get('/createDir', function (req, res){
