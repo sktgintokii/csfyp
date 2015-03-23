@@ -76,14 +76,14 @@ exports.listFiles = function(id, callback){
 	});
 }
 
-exports.createFolder = function (dirName, id, callback){
-	File.findById(id, function(err, file){
+exports.createFolder = function (dirName, fileid, callback){
+	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
 		else{
 			var newFolder = new File({name: dirName, type: "dir", children: []});
 			file.children.push(newFolder._id);
-			File.findByIdAndUpdate(id, file, function(err){
+			File.findByIdAndUpdate(fileid, file, function(err){
 				if (err) callback(err, null);
 				newFolder.save(function(err){
 					callback(err, newFolder);
@@ -94,21 +94,34 @@ exports.createFolder = function (dirName, id, callback){
 };
 
 /* Still under testing, don't use it */
-exports.uploadFile = function(name, files, callback){
+exports.uploadFile = function(name, fileid, files, callback){
+	// Find the accesstoken out from Token database
 	Token.findOne({name: name}, function(err, entry){
 		if (err) callback(err, entry);
 		else if (entry == null) callback("Access tokens not found", entry);
 		else{
-			console.log("In Google we trust!");
-			console.log(entry.platform);
-			console.log(entry);
 			if (entry.platform == 'Google'){
+				// upload file to Google Drive
 				googleapis.uploadFile(entry.Token, files.attributes, function(err, reply){
 					if (err) callback(err, reply);
 					else{
-						var newFile = new File({name: files.attributes.originalname, type: "file", did: entry._id, drive: entry._id, children: []});
-						newFile.save(function(err){
-							callback(err, reply);
+						// Find out the directory by fileid
+						console.log(reply);
+						File.findById(fileid, function(err, dir){
+							console.log(dir);
+							if (err) callback(err, dir);
+							else if (dir == null) callback("ID not found", null);
+							else{
+								// create the new file and add perform add children
+								var newFile = new File({name: files.attributes.originalname, type: "file", did: reply.id, drive: entry._id, children: []});
+								dir.children.push(newFile._id);
+								File.findByIdAndUpdate(fileid, dir, function(err){
+									if (err) callback(err, null);
+									newFile.save(function(err){
+										callback(err, newFile);
+									});
+								});
+							}
 						});
 					}
 				});

@@ -70,7 +70,7 @@ app.get('/createDir', function (req, res){
 // OUT: err, reply
 app.post('/uploadFile', function(req, res){
 	if(done==true){
-		models.uploadFile(req.body.uid, req.files, function(err, reply){
+		models.uploadFile(req.body.uid, req.body.fileid, req.files, function(err, reply){
 			console.log(err);
 			console.log(reply);
 		});
