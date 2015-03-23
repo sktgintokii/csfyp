@@ -32,6 +32,7 @@ app.get('/getRoot', function (req, res){
 	console.log("Query = " + req.query.uid);
 	models.getRoot(req.query.uid, function(err, root){
 		if (err) res.status(400).json({'err': err}).end();
+		else if (root == null) res.status(400).json({'err': "uid not found"});
 		else{
 			models.listFiles(root.root, function(err, file){
 				if (err) res.status(400).json({'err': err}).end();

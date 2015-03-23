@@ -36,12 +36,20 @@ exports.deleteUser = function (name, callback){
 exports.initDir = function(name, callback){
 	var root = new File({name: "root", type: "dir", children: []});
 	var entry = new FileSystem({name: name, root: root._id});
-	entry.save(function(err){
-		if (err) callback(err, root);
-		root.save(function(err){
-			callback(err, root);
-		})
-	});
+	FileSystem.findOne({name: name}, function(err, user){
+		console.log(user);
+		if (err) callback(err, null);
+		else if (user != null) callback("duplicate uid", null);
+		else{
+			entry.save(function(err){
+				if (err) callback(err, root);
+				root.save(function(err){
+					callback(err, root);
+				})
+			});
+		}
+	})
+	
 }
 
 exports.getRoot = function(name, callback){
