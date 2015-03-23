@@ -14,7 +14,7 @@ function init(){
 	var dir = getQueryString()['dir'];
 //var array = [{name: 'chrome', type: 'exe'}, {name: 'ff', type: 'folder'}];
 
-	var display() = function (array){
+	var display = function (array){
 		var content = '';
 			for (var i = 0; i < array.length; i++){
 				var file = array[i];
