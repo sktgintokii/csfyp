@@ -10,7 +10,7 @@
 		
 			<ul class="dropdown-menu" role="menu">
 				<li>
-					<a href="#" id="create-folder-opt">
+					<a href="#" data-toggle="modal" data-target="#create-folder-modal">
 						<i class="fa fa-folder-open"></i>Create folder
 					</a>
 				</li>
@@ -137,6 +137,34 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" data-dismiss="modal">Confirm</button>
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal" id="create-folder-modal" tabindex="-1" role="dialog" aria-labelledby="create-folder-modal-label" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">Create Folder</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<div class="form-horizontal">
+						<label for="create-folder-input" class="col-xs-2 control-label">Name</label>
+						<div class="col-xs-10">
+    					<input type="text" class="form-control" id="create-folder-input" placeholder="Folder name (Default: New Folder)">
+    					</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-primary confirm-btn" data-dismiss="modal">Confirm</button>
+				<button class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>

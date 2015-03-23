@@ -56,7 +56,7 @@ function showFileList(err, res){
 	for (var i = 0; i < array.length; i++){
 		var file = array[i];
 
-		content += '<tr tabindex="0" fileid="' + file._id + '">' +
+		content += '<tr tabindex="-1" fileid="' + file._id + '">' +
 				'<td aria-label="name">' + file.name + '</td>' +
 				'<td aria-label="type">' + file.type + '</td>' +
 				'</tr>';
@@ -106,14 +106,25 @@ function init(){
 function createFolderHandler(e){
 	e.preventDefault();
 
+	if (dir === undefined)
+		return console.log('undefined dir');
+
+	var name = document.querySelector('#create-folder-input').value;
+	document.querySelector('#create-folder-input').value = '';
+	if (name === '')
+		name = 'New Folder';
+
+	
+
 	superagent
-		.get('/fs/getRoot')
-		.query({uid: uid})
+		.get('/fs/createDir')
+		.query({name: name, fileid: dir})
 		.end(function (err, res){
 			if (err){
-				alert(err);
+				console.log(err);
 			} else {
-				showFileList(res.body.dir);
+				console.log('created folder [%s]', name);
+				init();
 			}
 
 		});
@@ -161,7 +172,7 @@ function logoutHandler(e){
 //---------------------  Start of execution of main.js -----------------
 init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
-document.querySelector('#create-folder-opt').addEventListener("click", createFolderHandler);
+document.querySelector('#create-folder-modal .confirm-btn').addEventListener("click", createFolderHandler);
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
 
