@@ -35,7 +35,7 @@ function init(){
 				if (err){
 					alert(err);
 				} else {
-					display(res.body.children);
+					display(res.body.dir);
 				}
 
 			});
@@ -47,7 +47,7 @@ function init(){
 				if (err){
 					alert(err);
 				} else {
-					display(res.body.children);
+					display(res.body.dir);
 				}
 			})
 	}
