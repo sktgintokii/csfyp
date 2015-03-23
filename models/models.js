@@ -129,7 +129,7 @@ exports.uploadFile = function(name, fileid, files, callback){
 	});
 }
 
-exports.generateDownloadLink = function(name, fileid, callback){
+exports.getDownloadLink = function(name, fileid, callback){
 	Token.findOne({name: name}, function(err, entry){
 		if (err) callback(err, entry);
 		else if (entry == null) callback("Access tokens not found", entry);
