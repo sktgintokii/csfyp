@@ -12,6 +12,7 @@ function getQueryString() {
 }
 
 function setCurrentDir(dir){
+	document.querySelector('#upload-file-dir').setAttribute("value", dir);
 	document.querySelector('#file-list').setAttribute("fileid", dir);
 }
 
@@ -131,23 +132,17 @@ function createFolderHandler(e){
 }
 
 function uploadFileHandler(e){
-	var path = document.querySelector('#upload-file-input').files[0];
-	
-	superagent
-		.post('/fs/uploadFile')
-		.type('form')
-		.send({fileid: dir})
-		.attach('file', path)
-		.end(function (err, res){
-			if (err){
-				console.log(err);
-			} else {
-				console.log('uploaded folder [%s]', name);
-				init();
-			}
+	var form = document.querySelector('#upload-form');
 
-		});
-
+	var data = new FormData(form);
+	jQuery.ajax({
+	    url: '/fs/uploadFile',
+	    data: data,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    type: 'POST'
+	});
 }
 
 function fileListHandlers(ele){
