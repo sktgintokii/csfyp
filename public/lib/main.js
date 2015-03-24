@@ -133,12 +133,13 @@ function createFolderHandler(e){
 function uploadFileHandler(e){
 	superagent
 		.post('/fs/uploadFile')
-		.query({fileid: dir})
+		.type('form')
+		.send({fileid: dir})
 		.end(function (err, res){
 			if (err){
 				console.log(err);
 			} else {
-				console.log('created folder [%s]', name);
+				console.log('uploaded folder [%s]', name);
 				init();
 			}
 
