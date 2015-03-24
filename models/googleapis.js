@@ -31,17 +31,31 @@ exports.uploadFile = function (accessToken, attributes, callback){
 		fs.readFile(attributes.path, function (err, data){
 			if (err) callback(err, null);
 			else{
-				drive.files.insert({
+				var req = drive.files.insert({
 					resource: {
 				    	title: attributes.name,
-				    	mimeType: 'text/plain'
+				    	mimeType: 'text/plain',
+				    	shared: true
 				  	},
 				  	media: {
 				    	mimeType: 'text/plain',
 				    	body: data
 				  	}
 				}, function(err, reply){
-					callback(err, reply);
+					if (err) callback(err, reply);
+					else{
+						console.log("fileid" + reply.id);
+						drive.permissions.insert({
+							fileId: reply.id,
+							resource: {
+								role: "reader",
+								type: "anyone",
+								withLink: true
+							}
+						}, function(err, resp){
+							callback(err, reply);
+						});
+					}
 				});
 			}
 		});
