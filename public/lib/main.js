@@ -131,10 +131,13 @@ function createFolderHandler(e){
 }
 
 function uploadFileHandler(e){
+	var path = document.querySelector('#upload-file-input').files[0];
+	
 	superagent
 		.post('/fs/uploadFile')
 		.type('form')
 		.send({fileid: dir})
+		.attach('file', path)
 		.end(function (err, res){
 			if (err){
 				console.log(err);
