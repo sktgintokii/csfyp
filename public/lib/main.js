@@ -141,7 +141,7 @@ function uploadFileHandler(e){
 	document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "visible";
 	window.setTimeout(function(){
 		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
-	}, 3000);
+	}, 1500);
 
 	var data = new FormData(form);
 	jQuery.ajax({
@@ -179,12 +179,12 @@ function fileDlLinkHandler(ele){
 			.get('/fs/getDownloadLink')
 			.query({fileid: fileid})
 			.end(function (err, res){
-				var error = err || res.err;
+				var error = err || res.body.err;
 				if (error)
 					return console.log(error);
 
-				console.log(res.downloadLink);
-				window.open(res.downloadLink, '_blank');
+				console.log(res);
+				location.href = res.body.downloadLink;
 			});
 	});
 }
