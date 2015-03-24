@@ -29,7 +29,6 @@ app.get('/initDir', function (req, res){
 // IN: uid
 // OUT: err, dir
 app.get('/getRoot', function (req, res){
-	console.log("Query = " + req.query.uid);
 	models.getRoot(req.query.uid, function(err, root){
 		if (err) res.status(400).json({err: err, dir: null}).end();
 		else{
@@ -53,6 +52,7 @@ app.get('/getRootId', function(req, res){
 // IN: fileid
 // OUT: err, dir
 app.get('/lsDir', function(req, res){
+	console.log("uid = " + req.session.username);
 	models.listFiles(req.query.fileid, function(err, file){
 		res.send({err: err, dir: file});
 	});
@@ -86,7 +86,7 @@ app.get('/getDownloadLink', function(req, res){
 // OUT: err, reply
 app.post('/uploadFile', function(req, res){
 	if(done==true){
-		models.uploadFile(req.body.uid, req.body.fileid, req.files, function(err, reply){
+		models.uploadFile(req.session.uid, req.body.fileid, req.files, function(err, reply){
 			console.log(err);
 			console.log(reply);
 		});
