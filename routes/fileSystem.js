@@ -18,18 +18,18 @@ onFileUploadComplete: function (file) {
 }
 }));
 
-// IN: uid
+// IN: session.username
 // OUT: err, ret
 app.get('/initDir', function (req, res){
-	models.initDir(req.query.uid, function(err, ret){
+	models.initDir(req.session.username, function(err, ret){
 		res.send({err: err, ret: ret});
 	});
 });
 
-// IN: uid
+// IN: session.username
 // OUT: err, dir
 app.get('/getRoot', function (req, res){
-	models.getRoot(req.query.uid, function(err, root){
+	models.getRoot(req.session.username, function(err, root){
 		if (err) res.status(400).json({err: err, dir: null}).end();
 		else{
 			models.listFiles(root.root, function(err, dir){
@@ -40,10 +40,10 @@ app.get('/getRoot', function (req, res){
 	});
 });
 
-// IN: uid
+// IN: session.username
 // OUT: err, _id
 app.get('/getRootId', function(req, res){
-	models.getRoot(req.query.uid, function(err, root){
+	models.getRoot(req.session.username, function(err, root){
 		if (err) res.status(400).json({'err': err, _id: null}).end();
 		else res.send({_id: root.root, err: null});
 	});
@@ -52,7 +52,6 @@ app.get('/getRootId', function(req, res){
 // IN: fileid
 // OUT: err, dir
 app.get('/lsDir', function(req, res){
-	console.log("uid = " + req.session.username);
 	models.listFiles(req.query.fileid, function(err, file){
 		res.send({err: err, dir: file});
 	});
@@ -74,10 +73,10 @@ app.get('/createDir', function (req, res){
 	});
 });
 
-// IN: uid, fileid
+// IN: session.username, fileid
 // OUT: err, downloadLink
 app.get('/getDownloadLink', function(req, res){
-	models.getDownloadLink(req.query.uid, req.query.fileid, function(err, downloadLink){
+	models.getDownloadLink(req.session.username, req.query.fileid, function(err, downloadLink){
 		res.send({err: err, downloadLink: downloadLink});
 	});
 });
