@@ -65,7 +65,7 @@ function showFileList(err, res){
 	}
 	document.querySelector('#file-list > tbody').innerHTML = content;
 	[].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
-	[].forEach.call(document.querySelectorAll('#file-list > tbody > tr > td[aria-label="dlLink"]'), fileListHandlers);
+	[].forEach.call(document.querySelectorAll('#file-list td[aria-label="dlLink"]'), fileDlLinkHandler);
 
 }
 
@@ -138,6 +138,11 @@ function uploadFileHandler(e){
 	e.preventDefault();
 	var form = document.querySelector('#upload-form');
 
+	document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "visible";
+	window.setTimeout(function(){
+		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
+	}, 3000);
+
 	var data = new FormData(form);
 	jQuery.ajax({
 	    url: '/fs/uploadFile',
@@ -152,6 +157,7 @@ function uploadFileHandler(e){
 	    	init();
 	    	form.reset();
 
+
 	    },
 	    error: function(){
 	    	console.log('Fail to upload file');
@@ -162,6 +168,25 @@ function uploadFileHandler(e){
 function fileListHandlers(ele){
 	//ele.addEventListener("click", fileListClickHandler);
 	ele.addEventListener("dblclick", fileListDblClickHandler);
+}
+
+function fileDlLinkHandler(ele){
+	ele.addEventListener("click", function(e){
+		e.preventDefault();
+
+		var fileid = this.parentNode.getAttribute("fileid");
+		superagent
+			.get('/fs/getDownloadLink')
+			.query({fileid: fileid})
+			.end(function (err, res){
+				var error = err || res.err;
+				if (error)
+					return console.log(error);
+
+				console.log(res.downloadLink);
+				window.open(res.downloadLink, '_blank');
+			});
+	});
 }
 
 function fileListClickHandler(e){
@@ -187,6 +212,7 @@ function fileListDblClickHandler(e){
 	}
 }
 
+
 function logoutHandler(e){
 	e.preventDefault();
 
@@ -203,7 +229,6 @@ init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
 document.querySelector('#create-folder-modal .confirm-btn').addEventListener("click", createFolderHandler);
 document.querySelector('#upload-modal .confirm-btn').addEventListener("click", uploadFileHandler);
-
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
 

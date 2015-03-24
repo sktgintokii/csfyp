@@ -39,3 +39,13 @@
 	user-select: none;
 }
 
+.navbar-fixed-bottom{
+	visibility: hidden;
+}
+
+.navbar-fixed-bottom .alert{
+	visibility: hidden;
+}
+
+
+
