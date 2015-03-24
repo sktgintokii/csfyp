@@ -130,13 +130,13 @@
 			<div class="modal-body">
 				<form id="upload-form" class="form-group" enctype="multipart/form-data" action="/drive/api/upload">
 					<label for="upload">File(s) to upload</label>
-					<input type="file" id="upload" multiple/>
+					<input id="upload-file-input" type="file" id="upload" multiple/>
 				</form>
 			</div>
 
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" data-dismiss="modal">Confirm</button>
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button class="btn btn-primary confirm-btn" data-dismiss="modal">Confirm</button>
+				<button class="btn btn-default close-btn" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>

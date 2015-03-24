@@ -130,6 +130,10 @@ function createFolderHandler(e){
 		});
 }
 
+function uploadFileHandler(e){
+	document.querySelector('#upload-form').submit();
+}
+
 function fileListHandlers(ele){
 	//ele.addEventListener("click", fileListClickHandler);
 	ele.addEventListener("dblclick", fileListDblClickHandler);
@@ -173,6 +177,7 @@ function logoutHandler(e){
 init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
 document.querySelector('#create-folder-modal .confirm-btn').addEventListener("click", createFolderHandler);
+document.querySelector('#upload-modal .confirm-btn').addEventListener("click", uploadFileHandler);
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
 
