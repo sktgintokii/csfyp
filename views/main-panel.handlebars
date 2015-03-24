@@ -128,10 +128,11 @@
 				<h4 class="modal-title" id="myModalLabel">Upload file</h4>
 			</div>
 			<div class="modal-body">
-				<form id="upload-form" class="form-group" enctype="multipart/form-data" action="/fs/uploadFile" method="POST">
+				<form id="upload-form" class="form-group" enctype="multipart/form-data" action="/fs/uploadFile" method="post">
 					<label for="upload">File(s) to upload</label>
-					<input id="upload-file-input" type="file" id="upload" multiple/>
+					<input id="upload-file-input" type="file" name="upload">
 					<input type="hidden" id="upload-file-dir" name="fileid" value="">
+					<input type="submit" name="Submit">
 				</form>
 			</div>
 

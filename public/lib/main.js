@@ -132,6 +132,7 @@ function createFolderHandler(e){
 }
 
 function uploadFileHandler(e){
+	e.preventDefault();
 	var form = document.querySelector('#upload-form');
 
 	var data = new FormData(form);
@@ -141,7 +142,13 @@ function uploadFileHandler(e){
 	    cache: false,
 	    contentType: false,
 	    processData: false,
-	    type: 'POST'
+	    type: 'POST',
+	    success: function(data, err){
+	    	var error = data.err || err;
+	    	if (error)
+	    		return error;
+
+	    }
 	});
 }
 

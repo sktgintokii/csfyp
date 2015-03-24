@@ -85,10 +85,10 @@ app.get('/getDownloadLink', function(req, res){
 // IN: files, body.fileid
 // OUT: err, reply
 app.post('/uploadFile', function(req, res){
-	console.log(req);
+	console.log(req.files);
 	if(done==true){
 		models.uploadFile(req.session.username, req.body.fileid, req.files, function(err, reply){
-			res.send({err: err, file: file});
+			res.send({err: err});
 		});
 	}
 });
