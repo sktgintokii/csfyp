@@ -77,7 +77,7 @@ app.get('/createDir', function (req, res){
 // IN: uid, fileid
 // OUT: err, downloadLink
 app.get('/getDownloadLink', function(req, res){
-	models.getDownloadLink(req.query.uid, req.query.fileid, function(err, downloadLink){
+	models.getDownloadLink(req.session.username, req.query.fileid, function(err, downloadLink){
 		res.send({err: err, downloadLink: downloadLink});
 	});
 });
