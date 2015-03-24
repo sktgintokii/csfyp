@@ -131,7 +131,19 @@ function createFolderHandler(e){
 }
 
 function uploadFileHandler(e){
-	document.querySelector('#upload-form').submit();
+	superagent
+		.post('/fs/uploadFile')
+		.query({fileid: dir})
+		.end(function (err, res){
+			if (err){
+				console.log(err);
+			} else {
+				console.log('created folder [%s]', name);
+				init();
+			}
+
+		});
+
 }
 
 function fileListHandlers(ele){
