@@ -143,11 +143,13 @@ function uploadFileHandler(e){
 	    contentType: false,
 	    processData: false,
 	    type: 'POST',
-	    success: function(data, err){
-	    	var error = data.err || err;
-	    	if (error)
-	    		return error;
+	    success: function(data){
+	    	if (data.err)
+	    		return console.log(data.err);
 
+	    },
+	    error: function(){
+	    	console.log('Fail to upload file');
 	    }
 	});
 }
