@@ -89,7 +89,7 @@
 		</div>
 	</div>
 
-	<div class="col-xs-9">
+	<div id="main-file-panel" class="col-xs-9">
 		<ol id="path-crum" class="breadcrumb">
 			<li aria-label="root">
 				<a href="">Root</a>
@@ -106,6 +106,7 @@
 					<tr>
 						<td>Name</td>
 						<td>Type</td>
+						<td>Download</td>
 					</tr>
 				</thead>
 				<tbody>
@@ -116,6 +117,14 @@
 
 	</div>
 </div>
+
+<ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
+    <li><a tabindex="-1" href="#">Open</a></li>
+    <li><a tabindex="-1" href="#">Download</a></li>
+    <li><a tabindex="-1" href="#">Delete</a></li>
+    <li class="divider"></li>
+    <li><a tabindex="-1" href="#">View Details</a></li>
+</ul>
 
 <!-- Modals put here-->
 <div class="modal" id="upload-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

@@ -57,13 +57,16 @@ function showFileList(err, res){
 	for (var i = 0; i < array.length; i++){
 		var file = array[i];
 
-		content += '<tr tabindex="-1" fileid="' + file._id + '">' +
+		content += '<tr tabindex="0" fileid="' + file._id + '">' +
 				'<td aria-label="name">' + file.name + '</td>' +
 				'<td aria-label="type">' + file.type + '</td>' +
+				'<td aria-label="dlLink"><a href="#"><i class="fa fa-cloud-download"></i></a></td>' + 
 				'</tr>';
 	}
 	document.querySelector('#file-list > tbody').innerHTML = content;
-	[].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);	
+	[].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
+	[].forEach.call(document.querySelectorAll('#file-list > tbody > tr > td[aria-label="dlLink"]'), fileListHandlers);
+
 }
 
 function init(){
@@ -146,6 +149,8 @@ function uploadFileHandler(e){
 	    success: function(data){
 	    	if (data.err)
 	    		return console.log(data.err);
+	    	init();
+	    	form.reset();
 
 	    },
 	    error: function(){
@@ -198,6 +203,7 @@ init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
 document.querySelector('#create-folder-modal .confirm-btn').addEventListener("click", createFolderHandler);
 document.querySelector('#upload-modal .confirm-btn').addEventListener("click", uploadFileHandler);
+
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
 

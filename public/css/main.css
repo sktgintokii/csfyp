@@ -21,8 +21,12 @@
 	display: none;
 }
 
+#file-list > tbody > tr{
+	color: #39c;
+}
+
 #file-list > tbody > tr:focus{
-	background-color: #757575;
+	background-color: #03A9F4;
 	color: white;
 }
 
@@ -34,3 +38,4 @@
 	-ms-user-select: none;
 	user-select: none;
 }
+
