@@ -126,7 +126,8 @@ exports.uploadFile = function(name, fileid, files, callback){
 		else{
 			if (entry.platform == 'Google'){
 				// upload file to Google Drive
-				googleapis.uploadFile(entry.Token, files.attributes, function(err, reply){
+
+				googleapis.uploadFile(entry.Token, files.upload, function(err, reply){
 					if (err) callback(err, reply);
 					else{
 						// Find out the directory by fileid
@@ -136,7 +137,7 @@ exports.uploadFile = function(name, fileid, files, callback){
 							else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
 							else{
 								// create the new file and add perform add children
-								var newFile = new File({name: files.attributes.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid});
+								var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid});
 								dir.children.push(newFile._id);
 								File.findByIdAndUpdate(fileid, dir, function(err){
 									if (err) callback(err, null);
