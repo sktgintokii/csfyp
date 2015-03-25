@@ -1,0 +1,8 @@
+# csfyp
+
+TODO:
+-Secuity Improvement(username matching)
+-Drag and Drop
+-Add Google Drive Account/Dropbox Account
+-Recursive upload/download/delete
+-Monitor Drive status(capacity, etc.)
