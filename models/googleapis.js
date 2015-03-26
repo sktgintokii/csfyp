@@ -57,16 +57,20 @@ exports.uploadFile = function (accessToken, attributes, callback){
 				}, function(err, reply){
 					if (err) callback(err, reply);
 					else{
-						console.log("fileid" + reply.id);
-						drive.permissions.insert({
-							fileId: reply.id,
-							resource: {
-								role: "reader",
-								type: "anyone",
-								withLink: true
+						fs.unlink("./uploads/" + attributes.name, function(err){
+							if (err) callback(err, null);
+							else{
+								drive.permissions.insert({
+									fileId: reply.id,
+									resource: {
+										role: "reader",
+										type: "anyone",
+										withLink: true
+									}
+								}, function(err, resp){
+										
+								});
 							}
-						}, function(err, resp){
-							callback(err, reply);
 						});
 					}
 				});
