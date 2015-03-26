@@ -37,10 +37,10 @@ exports.deleteUser = function (name, callback){
 	});
 };
 
-exports.initDir = function(name, callback){
-	var root = new File({name: "root", type: "dir", children: [], parent: null});
-	var entry = new FileSystem({name: name, root: root._id});
-	FileSystem.findOne({name: name}, function(err, user){
+exports.initDir = function(uid, callback){
+	var root = new File({name: "root", type: "dir", children: [], parent: null, owner: uid});
+	var entry = new FileSystem({name: uid, root: root._id});
+	FileSystem.findOne({name: uid}, function(err, user){
 		if (err) callback(err, null);
 		else if (user != null) callback("duplicate uid", null);
 		else{
@@ -55,8 +55,8 @@ exports.initDir = function(name, callback){
 	
 }
 
-exports.getRoot = function(name, callback){
-	FileSystem.findOne({name: name}, function(err, root){
+exports.getRoot = function(uid, callback){
+	FileSystem.findOne({name: uid}, function(err, root){
 		if (root == null) callback("uid not found", null);
 		else callback(err, root);
 	});
@@ -110,7 +110,7 @@ exports.createFolder = function (dirName, fileid, uid, callback){
 		else if (file.type != "dir") callback("Cannot upload file to a non-directory", null);
 		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
-			var newFolder = new File({name: dirName, type: "dir", children: [], parent: fileid});
+			var newFolder = new File({name: dirName, type: "dir", children: [], parent: fileid, owner: uid});
 			file.children.push(newFolder._id);
 			File.findByIdAndUpdate(fileid, file, function(err){
 				if (err) callback(err, null);
@@ -142,7 +142,7 @@ exports.uploadFile = function(uid, fileid, files, callback){
 							else if (dir.owner != uid) callback("Invalid Credential", null);
 							else{
 								// create the new file and add perform add children
-								var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid});
+								var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid, owner: uid});
 								dir.children.push(newFile._id);
 								File.findByIdAndUpdate(fileid, dir, function(err){
 									if (err) callback(err, null);
