@@ -15,8 +15,8 @@ var fsSchema = Schema({
 	parent: Schema.Types.ObjectId
 });
 File = mongoose.model('file', fsSchema);
-FileSystem = mongoose.model('FileSystem', {name: String, root: Schema.Types.ObjectId});
-Token = mongoose.model('Token', {name: String, platform: String, Token: Schema.Types.Mixed});
+FileSystem = mongoose.model('FileSystem', {uid: String, root: Schema.Types.ObjectId});
+Token = mongoose.model('Token', {uid: String, platform: String, owner: String, Token: Schema.Types.Mixed});
 
 exports.createUser = function (name, pw, callback){
 	var user = new User({name: name, pw: pw});
@@ -38,9 +38,9 @@ exports.deleteUser = function (name, callback){
 };
 
 exports.initDir = function(uid, callback){
-	var root = new File({name: "root", type: "dir", children: [], parent: null, owner: uid});
-	var entry = new FileSystem({name: uid, root: root._id});
-	FileSystem.findOne({name: uid}, function(err, user){
+	var root = new File({uid: "root", type: "dir", children: [], parent: null, owner: uid});
+	var entry = new FileSystem({uid: uid, root: root._id});
+	FileSystem.findOne({uid: uid}, function(err, user){
 		if (err) callback(err, null);
 		else if (user != null) callback("duplicate uid", null);
 		else{
@@ -56,7 +56,7 @@ exports.initDir = function(uid, callback){
 }
 
 exports.getRoot = function(uid, callback){
-	FileSystem.findOne({name: uid}, function(err, root){
+	FileSystem.findOne({uid: uid}, function(err, root){
 		if (root == null) callback("uid not found", null);
 		else callback(err, root);
 	});
@@ -124,7 +124,7 @@ exports.createFolder = function (dirName, fileid, uid, callback){
 
 exports.uploadFile = function(uid, fileid, files, callback){
 	// Find the accesstoken out from Token database
-	Token.findOne({name: uid}, function(err, entry){
+	Token.findOne({uid: uid}, function(err, entry){
 		if (err) callback(err, entry);
 		else if (entry == null) callback("Access tokens not found", entry);
 		else{
@@ -162,7 +162,7 @@ exports.uploadFile = function(uid, fileid, files, callback){
 }
 
 exports.getDownloadLink = function(uid, fileid, callback){
-	Token.findOne({name: uid}, function(err, entry){
+	Token.findOne({uid: uid}, function(err, entry){
 		if (err) callback(err, entry);
 		else if (entry == null) callback("Access tokens not found", entry);
 		else{
@@ -197,7 +197,7 @@ function dumpStructure(id, prefix){
 }
 
 exports.dumpStructure = function (name, callback){
-	FileSystem.find({name: name}, function(err, fs){
+	FileSystem.find({uid: name}, function(err, fs){
 		if (err){
 			console.log(err);
 			callback(err, fs);

@@ -8,6 +8,19 @@ var CLIENT_SECRET = 'KI_FH7VtcI-9XUi_kRrbpXgV';
 var REDIRECT_URL = 'http://localhost:5000/redirect';
 var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 
+// to get accessToken by code
+exports.getAccessToken = function(code, callback){
+	oauth2Client.getToken(code, function(err, token){
+		callback(err, token);
+	})
+}
+
+// to get information of an acccessToken
+// this function is used to check if a user used two duplicate accounts
+exports.getTokenInfo = function(accessToken, callback){
+	oauth2Client.setCredentials(accessToken);
+	callback(oauth2Client.tokenInfo);
+}
 
 /*
 Template of attributes
