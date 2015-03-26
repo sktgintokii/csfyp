@@ -9,6 +9,7 @@ var fsSchema = Schema({
 	name: String,
 	type: String,
 	did: String, // id in cloud drive(only for non-dir)
+	owner: String,
 	drive: Schema.Types.ObjectId, // cloud drive id(only for non-dir)
 	children: [{id: Schema.Types.ObjectId}],
 	parent: Schema.Types.ObjectId
@@ -61,11 +62,12 @@ exports.getRoot = function(name, callback){
 	});
 }
 
-exports.listFiles = function(fileid, callback){
+exports.listFiles = function(fileid, uid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
 		else if (file.type != "dir") callback("Cannot list a non-directory", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
 			// add details to children
 			var query = [];
@@ -78,13 +80,14 @@ exports.listFiles = function(fileid, callback){
 }
 
 // recursive function to return list
-function getAncestor(fileid, callback){
+function getAncestor(fileid, uid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, null);
 		else if (file == null) callback("Fail to get ancestor list(Pointer failure)", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
 			if (file.parent != null){
-				getAncestor(file.parent, function(err, ancestor){
+				getAncestor(file.parent, uid, function(err, ancestor){
 					ancestor.push(file);
 					callback(err, ancestor);
 				});
@@ -94,17 +97,18 @@ function getAncestor(fileid, callback){
 	});
 }
 
-exports.getAncestor = function(fileid, callback){
+exports.getAncestor = function(fileid, uid, callback){
 	getAncestor(fileid, function(err, ancestor){
-		callback(err, ancestor);
+		callback(err, uid, ancestor);
 	});
 }
 
-exports.createFolder = function (dirName, fileid, callback){
+exports.createFolder = function (dirName, fileid, uid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
 		else if (file.type != "dir") callback("Cannot upload file to a non-directory", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
 			var newFolder = new File({name: dirName, type: "dir", children: [], parent: fileid});
 			file.children.push(newFolder._id);
@@ -118,9 +122,9 @@ exports.createFolder = function (dirName, fileid, callback){
 	});
 };
 
-exports.uploadFile = function(name, fileid, files, callback){
+exports.uploadFile = function(uid, fileid, files, callback){
 	// Find the accesstoken out from Token database
-	Token.findOne({name: name}, function(err, entry){
+	Token.findOne({name: uid}, function(err, entry){
 		if (err) callback(err, entry);
 		else if (entry == null) callback("Access tokens not found", entry);
 		else{
@@ -135,6 +139,7 @@ exports.uploadFile = function(name, fileid, files, callback){
 							if (err) callback(err, dir);
 							else if (dir == null) callback("ID not found", null);
 							else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
+							else if (dir.owner != uid) callback("Invalid Credential", null);
 							else{
 								// create the new file and add perform add children
 								var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid});
@@ -156,8 +161,8 @@ exports.uploadFile = function(name, fileid, files, callback){
 	});
 }
 
-exports.getDownloadLink = function(name, fileid, callback){
-	Token.findOne({name: name}, function(err, entry){
+exports.getDownloadLink = function(uid, fileid, callback){
+	Token.findOne({name: uid}, function(err, entry){
 		if (err) callback(err, entry);
 		else if (entry == null) callback("Access tokens not found", entry);
 		else{
@@ -166,8 +171,10 @@ exports.getDownloadLink = function(name, fileid, callback){
 				else if (file == null) callback("ID not found", null);
 				else if (file.type == "dir") callback("Cannot download a directory", null);
 				else if (file.did == undefined) callback("No Drive File ID found", null);
+				else if (file.owner != uid) callback("Invalid Credential", null);
 				else{
 					googleapis.queryFile(entry.Token, file.did, function(err, reply){
+						console.log(reply);
 						callback(err, reply.webContentLink);
 					});
 				}

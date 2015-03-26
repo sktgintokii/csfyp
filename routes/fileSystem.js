@@ -21,7 +21,7 @@ onFileUploadComplete: function (file) {
 // IN: session.username
 // OUT: err, ret
 app.get('/initDir', function (req, res){
-	models.initDir(req.session.username, function(err, ret){
+	models.initDir(req.query.username, function(err, ret){
 		res.send({err: err, ret: ret});
 	});
 });
@@ -52,7 +52,7 @@ app.get('/getRootId', function(req, res){
 // IN: fileid
 // OUT: err, dir
 app.get('/lsDir', function(req, res){
-	models.listFiles(req.query.fileid, function(err, file){
+	models.listFiles(req.query.fileid, req.session.username, function(err, file){
 		res.send({err: err, dir: file});
 	});
 });
@@ -60,7 +60,7 @@ app.get('/lsDir', function(req, res){
 // IN: fileid
 // OUT: err, ancestor
 app.get('/getAncestor', function(req, res){
-	models.getAncestor(req.query.fileid, function(err, ancestor){
+	models.getAncestor(req.query.fileid, req.session.username, function(err, ancestor){
 		res.send({err: err, ancestor: ancestor});
 	});
 });
@@ -68,7 +68,7 @@ app.get('/getAncestor', function(req, res){
 // IN: name, fileid
 // OUT: err, dir
 app.get('/createDir', function (req, res){
-	models.createFolder(req.query.name, req.query.fileid, function(err, dir){
+	models.createFolder(req.query.name, req.query.fileid, req.session.username, function(err, dir){
 		res.send({err: err, dir: dir});
 	});
 });
@@ -77,6 +77,7 @@ app.get('/createDir', function (req, res){
 // OUT: err, downloadLink
 app.get('/getDownloadLink', function(req, res){
 	models.getDownloadLink(req.session.username, req.query.fileid, function(err, downloadLink){
+		console.log({err: err, downloadLink: downloadLink});
 		res.send({err: err, downloadLink: downloadLink});
 	});
 });
