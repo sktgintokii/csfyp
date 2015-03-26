@@ -21,7 +21,7 @@ onFileUploadComplete: function (file) {
 // IN: session.username
 // OUT: err, ret
 app.get('/initDir', function (req, res){
-	models.initDir(req.query.username, function(err, ret){
+	models.initDir(req.session.username, function(err, ret){
 		res.send({err: err, ret: ret});
 	});
 });
@@ -86,7 +86,6 @@ app.get('/getDownloadLink', function(req, res){
 // OUT: err, reply
 app.post('/uploadFile', function(req, res){
 	if(done==true){
-		console.log(req);
 		models.uploadFile(req.session.username, req.body.fileid, req.files, function(err, reply){
 			console.log(reply);
 			res.send({err: err, reply: reply});
