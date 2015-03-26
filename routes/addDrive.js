@@ -6,7 +6,7 @@ var app = express.Router();
 // OUT: err
 app.get('/google', function (req, res){
 	driveManager.addGoogleDrive(req.session.uid, req.query.code, function(err){
-		res.send(err);
+		res.send({err: err});
 	}
 });
 
