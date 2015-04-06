@@ -80,6 +80,17 @@ exports.uploadFile = function (accessToken, attributes, callback){
 	});
 };
 
+exports.deleteFile = function (accessToken, id, callback){
+	oauth2Client.setCredentials(accessToken);
+	oauth2Client.refreshAccessToken(function(err, tokens) {
+		var drive = google.drive({ version: 'v2', auth: oauth2Client });
+
+		drive.files.delete({fileId: id}, function(err){
+			callback(err);
+		});
+	});
+}
+
 // to get data of the file in google drive(e.g. download link, size, ...)
 // id provided by Google Drive
 exports.queryFile = function(accessToken, id, callback){
