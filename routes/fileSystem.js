@@ -81,14 +81,6 @@ app.get('/getDownloadLink', function(req, res){
 	});
 });
 
-// IN: session.username
-// OUT: err, capacity
-app.get('/getCapacity', function(req, res){
-	models.getCapacity(req.session.username, function(err, capacity){
-		res.send({err: err, capacity: capacity});
-	});
-});
-
 // IN: files, body.fileid
 // OUT: err, reply
 app.post('/uploadFile', function(req, res){
@@ -97,6 +89,22 @@ app.post('/uploadFile', function(req, res){
 			res.send({err: err, reply: reply});
 		});
 	}
+});
+
+// IN: session.username
+// OUT: err, capacity
+app.get('/getCapacity', function(req, res){
+	models.getCapacity(req.session.username, function(err, capacity){
+		res.send({err: err, capacity: capacity});
+	});
+});
+
+// IN: fileid
+// OUT: err
+app.get('/deleteFile', function (req, res){
+	models.deleteFile(req.query.fileid, req.session.username, function(err){
+		res.send({err: err});
+	});
 });
 
 module.exports = app;

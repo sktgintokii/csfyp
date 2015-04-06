@@ -236,6 +236,7 @@ exports.getDownloadLink = function(uid, fileid, callback){
 	});
 }
 
+// recursive function to get capacity
 function getCapacity(entries, callback){
 	if (entries.length == 0){
 		callback(null, []);
@@ -280,6 +281,121 @@ exports.getCapacity = function(uid, callback){
 		}
 	});
 }
+
+function deleteList(children, uid, callback){
+	if (children.length == 0){
+		callback(null);
+	}else{
+		var fileid = children[0];
+		deleteFile(fileid, uid, function(err){
+			if (err) callback(err);
+			else{
+				children.shift();
+				deleteList(children, uid, function(err){
+					callback(err);
+				});
+			}
+		});
+	}
+}
+
+// support recursive deletion
+function deleteFile(fileid, uid, callback){
+	File.findById(fileid, function(err, file){
+		if (err) callback(err);
+		else if (file == null) callback("ID not found");
+		else if (file.owner != uid) callback("Invalid Credential");
+		else{
+			if (file.type == 'file'){
+				// find out the token
+				Token.findById(file.drive, function(err, token){
+					if (err) callback(err, token);
+					else if (token == null) callback("Access tokens not found", token);
+					else{
+						// update parent's children list
+						File.findById(file.parent, function(err, parentDir){
+							if (err) callback(err);
+							else if (parentDir == null) callback("ID not found");
+							else if (parentDir.owner != uid) callback("Invalid Credential");
+							else{
+								for (var i = 0; i < parentDir.children.length; i++){
+									if (parentDir.children[i]._id == fileid){
+										parentDir.children.splice(i, 1);
+										break;
+									}
+								}
+								File.findByIdAndUpdate(file.parent, parentDir, function(err){
+									if (err) callback(err);
+									else{
+										// remove the file in FS
+										File.remove({_id: fileid}, function(err){
+											if (err) callback(err);
+											else{
+												if (token.platform == 'Google'){
+													// delete in google drive
+													googleapis.deleteFile(token.Token, file.did, function(err){
+														callback(err);
+													});
+												}else if (token.platform == 'Dropbox'){
+													// TODO: Dropbox delete
+												}
+												callback(err);
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+			// perform recursive delete
+			else if (file.type == 'dir'){
+				// validate not root
+				FileSystem.findOne({uid: uid}, function(err, user){
+					if (err) callback(err);
+					else if (user == null) callback("uid not found");
+					else if (user.root == fileid) callback("Cannot delete root directory");
+					else{
+						deleteList(file.children, uid, function(err){
+							if (err) callback(err);
+							else{
+								File.findById(file.parent, function(err, parentDir){
+									if (err) callback(err);
+									else if (parentDir == null) callback("ID not found");
+									else if (parentDir.owner != uid) callback("Invalid Credential");
+									else{
+										for (var i = 0; i < parentDir.children.length; i++){
+											if (parentDir.children[i]._id == fileid){
+												parentDir.children.splice(i, 1);
+												break;
+											}
+										}
+										File.findByIdAndUpdate(file.parent, parentDir, function(err){
+											if (err) callback(err);
+											else{
+												// remove the file in FS
+												File.remove({_id: fileid}, function(err){
+													callback(err);
+												});
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+		}
+	});
+}
+
+exports.deleteFile = function(fileid, uid, callback){
+	deleteFile(fileid, uid, function(err){
+		callback(err);
+	});
+};
 
 /* The Testing function to dump the whole file structure */
 function dumpStructure(id, prefix){
