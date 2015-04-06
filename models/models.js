@@ -40,7 +40,7 @@ exports.deleteUser = function (name, callback){
 exports.addGoogleDrive = function (uid, code, callback){
 	googleapis.getAccessToken(code, function(err, token){
 		if (err) callback(err);
-		else if (token.refresh_token == undefined) callback("Refresh token not found");
+		else if (token.refresh_token == undefined) callback("Refresh token not found", null);
 		else{
 			googleapis.getAccessToken(code, function(tokenInfo){
 				Token.findOne({owner: tokenInfo.issued_to}, function(err, entry){
@@ -143,41 +143,70 @@ exports.createFolder = function (dirName, fileid, uid, callback){
 	});
 };
 
+function selectAvailableDrive(entries, filesize, callback){
+	for (var i = 0; i < entries.length; i++){
+		var entry = entries[i];
+		if (entry.platform == 'Google'){
+			googleapis.queryDriveSpace(entry.Token, function(err, reply){
+				if (err){
+					callback(err, null);
+					return;
+				}
+				else{
+					if (reply.quotaBytesTotal - reply.quotaBytesUsed >= filesize){
+						callback(err, entry);
+						return;
+					}
+				}
+			});
+		}else if (entry.platform == 'Dropbox'){
+			// TODO: Handle Dropbox upload request
+		}
+	}
+	callback(null, null);
+}
+
 exports.uploadFile = function(uid, fileid, files, callback){
 	// Find the accesstoken out from Token database
-	Token.findOne({uid: uid}, function(err, entry){
+	Token.find({uid: uid}, function(err, entries){
 		if (err) callback(err, entry);
-		else if (entry == null) callback("Access tokens not found", entry);
+		else if (entries == []) callback("Access tokens not found", entry);
 		else{
-			if (entry.platform == 'Google'){
-				// upload file to Google Drive
-
-				googleapis.uploadFile(entry.Token, files.upload, function(err, reply){
-					if (err) callback(err, reply);
-					else{
-						// Find out the directory by fileid
-						File.findById(fileid, function(err, dir){
-							if (err) callback(err, dir);
-							else if (dir == null) callback("ID not found", null);
-							else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
-							else if (dir.owner != uid) callback("Invalid Credential", null);
+			selectAvailableDrive(entries, files.upload.size, function(err, entry){
+				if (err) console.log(err, null);
+				if (entry == null) console.log("No enough space", null);
+				else{
+					if (entry.platform == 'Google'){
+						// upload file to Google Drive
+						googleapis.uploadFile(entry.Token, files.upload, function(err, reply){
+							if (err) callback(err, reply);
 							else{
-								// create the new file and add perform add children
-								var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid, owner: uid});
-								dir.children.push(newFile._id);
-								File.findByIdAndUpdate(fileid, dir, function(err){
-									if (err) callback(err, null);
-									newFile.save(function(err){
-										callback(err, newFile);
-									});
+								// Find out the directory by fileid
+								File.findById(fileid, function(err, dir){
+									if (err) callback(err, dir);
+									else if (dir == null) callback("ID not found", null);
+									else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
+									else if (dir.owner != uid) callback("Invalid Credential", null);
+									else{
+										// create the new file and add perform add children
+										var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid, owner: uid});
+										dir.children.push(newFile._id);
+										File.findByIdAndUpdate(fileid, dir, function(err){
+											if (err) callback(err, null);
+											newFile.save(function(err){
+												callback(err, newFile);
+											});
+										});
+									}
 								});
 							}
 						});
+					}else if (entry.platform == 'Dropbox'){
+						// TODO: Handle Dropbox upload request
 					}
-				});
-			}else if (entry.platform == 'Dropbox'){
-				// TODO: Handle Dropbox upload request
-			}
+				}
+			});
+			
 		}
 	});
 }
