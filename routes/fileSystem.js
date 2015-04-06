@@ -32,7 +32,7 @@ app.get('/getRoot', function (req, res){
 	models.getRoot(req.session.username, function(err, root){
 		if (err) res.status(400).json({err: err, dir: null}).end();
 		else{
-			models.listFiles(root.root, function(err, dir){
+			models.listFiles(root.root, req.session.username, function(err, dir){
 				if (err) res.status(400).json({err: err, dir: null}).end();
 				else res.send({err: err, dir: dir});
 			});

@@ -59,7 +59,7 @@ exports.addGoogleDrive = function (uid, code, callback){
 };
 
 exports.initDir = function(uid, callback){
-	var root = new File({uid: "root", type: "dir", children: [], parent: null, owner: uid});
+	var root = new File({name: "root", type: "dir", children: [], parent: null, owner: uid});
 	var entry = new FileSystem({uid: uid, root: root._id});
 	FileSystem.findOne({uid: uid}, function(err, user){
 		if (err) callback(err, null);
@@ -119,8 +119,8 @@ function getAncestor(fileid, uid, callback){
 }
 
 exports.getAncestor = function(fileid, uid, callback){
-	getAncestor(fileid, function(err, ancestor){
-		callback(err, uid, ancestor);
+	getAncestor(fileid, uid, function(err, ancestor){
+		callback(err, ancestor);
 	});
 }
 
