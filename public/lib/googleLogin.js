@@ -1,4 +1,4 @@
-        var OAUTHURL    =   'https://accounts.google.com/o/oauth2/auth?';
+/*        var OAUTHURL    =   'https://accounts.google.com/o/oauth2/auth?';
         var VALIDURL    =   'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
         var SCOPE       =   'https://www.googleapis.com/auth/drive';
         var CLIENTID    =   '280286530527-lh0iqa2kh1r9si7v7v84ldn181n4caca.apps.googleusercontent.com';
@@ -35,6 +35,7 @@
             }, 500);
         }
 
+
         function validateToken(token) {
             $.ajax({
                 url: VALIDURL + token,
@@ -66,3 +67,14 @@
             $('#logoutText').hide();
             loggedIn = false;
         }
+*/
+
+function addGoogleDriveHandler(e){
+    e.preventDefault();
+
+    var target = this.getAttribute("href");
+    window.open(target, "Add Google Drive", 'width=800, height=600'); 
+}
+
+
+document.querySelector('#addGoogleDrive-btn').addEventListener('click', addGoogleDriveHandler);

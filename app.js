@@ -5,7 +5,8 @@ var express = require('express'),
 var authAPIRouter = require('./routes/auth.api.js'),
 	frontEndRouter = require('./routes/frontend.js'),
 	fileSystemRouter = require('./routes/fileSystem.js'),
-	addDriveRouter = require('./routes/addDrive.js');
+	addDriveRouter = require('./routes/addDrive.js'),
+	accountRouter = require('./routes/accountRouter.js');
 
 
 var app = express();
@@ -15,10 +16,14 @@ app.set('view engine', 'handlebars');
 app.use(express.static('public'));
 app.use('/node_modules', express.static('node_modules'))
 
+// 
+app.use('/account', accountRouter());
+
 // auth API runs first
 app.use('/', authAPIRouter());
 
 app.use('/fs', fileSystemRouter);
+
 app.use('/', frontEndRouter());
 
 

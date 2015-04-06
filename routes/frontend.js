@@ -14,6 +14,7 @@ module.exports = function (){
 
 	app.get('/', function (req, res){
 		console.log(req.session);
+
 		res.render('main-panel', {
 			title: 'main',
 			layout: 'main',
