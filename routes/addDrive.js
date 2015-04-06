@@ -16,7 +16,7 @@ app.get('/google', function (req, res){
 // OUT: err
 /*
 app.get('/google', function (req, res){
-	models.addGoogleDrive('ABC', req.query.code, function(err){
+	models.addGoogleDrive(req.session.username, req.query.code, function(err){
 		res.send({err: err});
 	});
 });
