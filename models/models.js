@@ -3,19 +3,19 @@ var Schema = mongoose.Schema;
 var googleapis = require('./googleapis.js');
 mongoose.connect('mongodb://localhost:27017/fyp');
 
-
 User = mongoose.model('users', {name: String, pw: String});
 var fsSchema = Schema({
 	name: String,
 	type: String,
 	did: String, // id in cloud drive(only for non-dir)
+	owner: String,
 	drive: Schema.Types.ObjectId, // cloud drive id(only for non-dir)
 	children: [{id: Schema.Types.ObjectId}],
 	parent: Schema.Types.ObjectId
 });
 File = mongoose.model('file', fsSchema);
-FileSystem = mongoose.model('FileSystem', {name: String, root: Schema.Types.ObjectId});
-Token = mongoose.model('Token', {name: String, platform: String, Token: Schema.Types.Mixed});
+FileSystem = mongoose.model('FileSystem', {uid: String, root: Schema.Types.ObjectId});
+Token = mongoose.model('Token', {uid: String, platform: String, owner: String, Token: Schema.Types.Mixed});
 
 exports.createUser = function (name, pw, callback){
 	var user = new User({name: name, pw: pw});
@@ -36,10 +36,31 @@ exports.deleteUser = function (name, callback){
 	});
 };
 
-exports.initDir = function(name, callback){
-	var root = new File({name: "root", type: "dir", children: [], parent: null});
-	var entry = new FileSystem({name: name, root: root._id});
-	FileSystem.findOne({name: name}, function(err, user){
+exports.addGoogleDrive = function (uid, code, callback){
+	googleapis.getAccessToken(code, function(err, token){
+		if (err) callback(err);
+		else if (token.refresh_token == undefined) callback("Refresh token not found", null);
+		else{
+			googleapis.queryDriveSpace(token, function(err, reply){
+				Token.findOne({owner: reply.user.emailAddress}, function(err, entry){
+					if (err) callback(err);
+					else if (entry != null) callback("Duplicate Google Account");
+					else{
+						var accessToken = new Token({uid: uid, platform: "Google", owner: reply.user.emailAddress, Token: token});
+						accessToken.save(function(err){
+							callback(err);
+						})
+					}
+				})
+			});
+		}
+	});
+};
+
+exports.initDir = function(uid, callback){
+	var root = new File({name: "root", type: "dir", children: [], parent: null, owner: uid});
+	var entry = new FileSystem({uid: uid, root: root._id});
+	FileSystem.findOne({uid: uid}, function(err, user){
 		if (err) callback(err, null);
 		else if (user != null) callback("duplicate uid", null);
 		else{
@@ -54,18 +75,19 @@ exports.initDir = function(name, callback){
 	
 }
 
-exports.getRoot = function(name, callback){
-	FileSystem.findOne({name: name}, function(err, root){
+exports.getRoot = function(uid, callback){
+	FileSystem.findOne({uid: uid}, function(err, root){
 		if (root == null) callback("uid not found", null);
 		else callback(err, root);
 	});
 }
 
-exports.listFiles = function(fileid, callback){
+exports.listFiles = function(fileid, uid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
 		else if (file.type != "dir") callback("Cannot list a non-directory", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
 			// add details to children
 			var query = [];
@@ -78,13 +100,14 @@ exports.listFiles = function(fileid, callback){
 }
 
 // recursive function to return list
-function getAncestor(fileid, callback){
+function getAncestor(fileid, uid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, null);
 		else if (file == null) callback("Fail to get ancestor list(Pointer failure)", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
 			if (file.parent != null){
-				getAncestor(file.parent, function(err, ancestor){
+				getAncestor(file.parent, uid, function(err, ancestor){
 					ancestor.push(file);
 					callback(err, ancestor);
 				});
@@ -94,19 +117,20 @@ function getAncestor(fileid, callback){
 	});
 }
 
-exports.getAncestor = function(fileid, callback){
-	getAncestor(fileid, function(err, ancestor){
+exports.getAncestor = function(fileid, uid, callback){
+	getAncestor(fileid, uid, function(err, ancestor){
 		callback(err, ancestor);
 	});
 }
 
-exports.createFolder = function (dirName, fileid, callback){
+exports.createFolder = function (dirName, fileid, uid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
 		else if (file.type != "dir") callback("Cannot upload file to a non-directory", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
-			var newFolder = new File({name: dirName, type: "dir", children: [], parent: fileid});
+			var newFolder = new File({name: dirName, type: "dir", children: [], parent: fileid, owner: uid});
 			file.children.push(newFolder._id);
 			File.findByIdAndUpdate(fileid, file, function(err){
 				if (err) callback(err, null);
@@ -118,56 +142,92 @@ exports.createFolder = function (dirName, fileid, callback){
 	});
 };
 
-exports.uploadFile = function(name, fileid, files, callback){
-	// Find the accesstoken out from Token database
-	Token.findOne({name: name}, function(err, entry){
-		if (err) callback(err, entry);
-		else if (entry == null) callback("Access tokens not found", entry);
-		else{
-			if (entry.platform == 'Google'){
-				// upload file to Google Drive
-
-				googleapis.uploadFile(entry.Token, files.upload, function(err, reply){
-					if (err) callback(err, reply);
+// recursive function to select available drive
+function selectAvailableDrive(entries, filesize, callback){
+	if (entries.length == 0){
+		callback(null, null);
+	}else{
+		var entry = entries[0];
+		if (entry.platform == 'Google'){
+			googleapis.queryDriveSpace(entry.Token, function(err, reply){
+				if (err) callback(err, null);
+				else{
+					if (reply.quotaBytesTotal - reply.quotaBytesUsed >= filesize) callback(err, entry);
 					else{
-						// Find out the directory by fileid
-						File.findById(fileid, function(err, dir){
-							if (err) callback(err, dir);
-							else if (dir == null) callback("ID not found", null);
-							else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
+						entries.shift();
+						selectAvailableDrive(entries, filesize, function(err, reply){
+							callback(err, reply);
+						});
+					}
+				}
+			});
+		}else if (entry.platform == 'Dropbox'){
+			// TODO: Handle Dropbox upload request
+		}
+	}
+}
+
+exports.uploadFile = function(uid, fileid, files, callback){
+	// Find the accesstoken out from Token database
+	Token.find({uid: uid}, function(err, entries){
+		if (err) callback(err, entry);
+		else if (entries == []) callback("Access tokens not found", entries);
+		else{
+			selectAvailableDrive(entries, files.upload.size, function(err, entry){
+				if (err) callback(err, null);
+				else if (entry == null) callback("No enough space", null);
+				else{
+					if (entry.platform == 'Google'){
+						// upload file to Google Drive
+
+						googleapis.uploadFile(entry.Token, files.upload, function(err, reply){
+							if (err) callback(err, reply);
 							else{
-								// create the new file and add perform add children
-								var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid});
-								dir.children.push(newFile._id);
-								File.findByIdAndUpdate(fileid, dir, function(err){
-									if (err) callback(err, null);
-									newFile.save(function(err){
-										callback(err, newFile);
-									});
+								// Find out the directory by fileid
+								File.findById(fileid, function(err, dir){
+									if (err) callback(err, dir);
+									else if (dir == null) callback("ID not found", null);
+									else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
+									else if (dir.owner != uid) callback("Invalid Credential", null);
+									else{
+
+										// create the new file and add perform add children
+										var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid, owner: uid});
+										dir.children.push(newFile._id);
+										File.findByIdAndUpdate(fileid, dir, function(err){
+											if (err) callback(err, null);
+											newFile.save(function(err){
+												callback(err, newFile);
+											});
+										});
+									}
 								});
 							}
 						});
+					}else if (entry.platform == 'Dropbox'){
+						// TODO: Handle Dropbox upload request
 					}
-				});
-			}else if (entry.platform == 'Dropbox'){
-				// TODO: Handle Dropbox upload request
-			}
+				}
+			});
+			
 		}
 	});
 }
 
-exports.getDownloadLink = function(name, fileid, callback){
-	Token.findOne({name: name}, function(err, entry){
-		if (err) callback(err, entry);
-		else if (entry == null) callback("Access tokens not found", entry);
+exports.getDownloadLink = function(uid, fileid, callback){
+	File.findById(fileid, function(err, file){
+		if (err) callback(err, file);
+		else if (file == null) callback("ID not found", null);
+		else if (file.type == "dir") callback("Cannot download a directory", null);
+		else if (file.did == undefined) callback("No Drive File ID found", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
-			File.findById(fileid, function(err, file){
-				if (err) callback(err, file);
-				else if (file == null) callback("ID not found", null);
-				else if (file.type == "dir") callback("Cannot download a directory", null);
-				else if (file.did == undefined) callback("No Drive File ID found", null);
+			Token.findById(file.drive, function(err, entry){
+				if (err) callback(err, entry);
+				else if (entry == null) callback("Access tokens not found", entry);
 				else{
 					googleapis.queryFile(entry.Token, file.did, function(err, reply){
+						console.log(reply);
 						callback(err, reply.webContentLink);
 					});
 				}
@@ -175,6 +235,167 @@ exports.getDownloadLink = function(name, fileid, callback){
 		}
 	});
 }
+
+// recursive function to get capacity
+function getCapacity(entries, callback){
+	if (entries.length == 0){
+		callback(null, []);
+	}else{
+		var entry = entries[0];
+		if (entry.platform == 'Google'){
+			googleapis.queryDriveSpace(entry.Token, function(err, capacity){
+				if (err) callback(err, []);
+				else{
+					entries.shift();
+					getCapacity(entries, function(err, capacities){
+						var newCapacity = {platform: 'Google', email: capacity.user.emailAddress, space: capacity.quotaBytesTotal, usedSpace: capacity.quotaBytesUsed};
+						capacities.unshift(newCapacity);
+						callback(err, capacities);
+					});
+				}
+			});
+		}else if (entry.platform == 'Dropbox'){
+			// TODO: Handle Dropbox upload request
+		}
+	}
+}
+
+exports.getCapacity = function(uid, callback){
+	Token.find({uid: uid}, function(err, entries){
+		if (err) callback(err, entries);
+		else if (entries == []) callback("Access tokens not found", entries);
+		else{
+			getCapacity(entries, function(err, capacities){
+				var capacity = null;
+				if (!err){
+					var totalSpace = 0;
+					var totalUsedSpace = 0;
+					for (var i = 0; i < capacities.length; i++){
+						totalSpace += capacities[i].space;
+						totalUsedSpace += capacities[i].usedSpace;
+					}
+					capacity = {totalSpace: totalSpace, totalUsedSpace: totalUsedSpace, drive: capacities};
+				}
+				callback(err, capacity);
+			});
+		}
+	});
+}
+
+function deleteList(children, uid, callback){
+	if (children.length == 0){
+		callback(null);
+	}else{
+		var fileid = children[0];
+		deleteFile(fileid, uid, function(err){
+			if (err) callback(err);
+			else{
+				children.shift();
+				deleteList(children, uid, function(err){
+					callback(err);
+				});
+			}
+		});
+	}
+}
+
+// support recursive deletion
+function deleteFile(fileid, uid, callback){
+	File.findById(fileid, function(err, file){
+		if (err) callback(err);
+		else if (file == null) callback("ID not found");
+		else if (file.owner != uid) callback("Invalid Credential");
+		else{
+			if (file.type == 'file'){
+				// find out the token
+				Token.findById(file.drive, function(err, token){
+					if (err) callback(err, token);
+					else if (token == null) callback("Access tokens not found", token);
+					else{
+						// update parent's children list
+						File.findById(file.parent, function(err, parentDir){
+							if (err) callback(err);
+							else if (parentDir == null) callback("ID not found");
+							else if (parentDir.owner != uid) callback("Invalid Credential");
+							else{
+								for (var i = 0; i < parentDir.children.length; i++){
+									if (parentDir.children[i]._id == fileid){
+										parentDir.children.splice(i, 1);
+										break;
+									}
+								}
+								File.findByIdAndUpdate(file.parent, parentDir, function(err){
+									if (err) callback(err);
+									else{
+										// remove the file in FS
+										File.remove({_id: fileid}, function(err){
+											if (err) callback(err);
+											else{
+												if (token.platform == 'Google'){
+													// delete in google drive
+													googleapis.deleteFile(token.Token, file.did, function(err){
+														callback(err);
+													});
+												}else if (token.platform == 'Dropbox'){
+													// TODO: Dropbox delete
+												}
+												callback(err);
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+			// perform recursive delete
+			else if (file.type == 'dir'){
+				// validate not root
+				FileSystem.findOne({uid: uid}, function(err, user){
+					if (err) callback(err);
+					else if (user == null) callback("uid not found");
+					else if (user.root == fileid) callback("Cannot delete root directory");
+					else{
+						deleteList(file.children, uid, function(err){
+							if (err) callback(err);
+							else{
+								File.findById(file.parent, function(err, parentDir){
+									if (err) callback(err);
+									else if (parentDir == null) callback("ID not found");
+									else if (parentDir.owner != uid) callback("Invalid Credential");
+									else{
+										for (var i = 0; i < parentDir.children.length; i++){
+											if (parentDir.children[i]._id == fileid){
+												parentDir.children.splice(i, 1);
+												break;
+											}
+										}
+										File.findByIdAndUpdate(file.parent, parentDir, function(err){
+											if (err) callback(err);
+											else{
+												// remove the file in FS
+												File.remove({_id: fileid}, function(err){
+													callback(err);
+												});
+											}
+										});
+									}
+								});
+							}
+						});
+					}
+				});
+			}
+		}
+	});
+}
+
+exports.deleteFile = function(fileid, uid, callback){
+	deleteFile(fileid, uid, function(err){
+		callback(err);
+	});
+};
 
 /* The Testing function to dump the whole file structure */
 function dumpStructure(id, prefix){
@@ -190,7 +411,7 @@ function dumpStructure(id, prefix){
 }
 
 exports.dumpStructure = function (name, callback){
-	FileSystem.find({name: name}, function(err, fs){
+	FileSystem.find({uid: name}, function(err, fs){
 		if (err){
 			console.log(err);
 			callback(err, fs);

@@ -5,9 +5,22 @@ var OAuth2 = google.auth.OAuth2;
 
 var CLIENT_ID = '280286530527-lh0iqa2kh1r9si7v7v84ldn181n4caca.apps.googleusercontent.com';
 var CLIENT_SECRET = 'KI_FH7VtcI-9XUi_kRrbpXgV';
-var REDIRECT_URL = 'http://localhost:5000/redirect';
+var REDIRECT_URL = 'http://localhost:3000/addDrive/google';
 var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
 
+// to get accessToken by code
+exports.getAccessToken = function(code, callback){
+	oauth2Client.getToken(code, function(err, token){
+		callback(err, token);
+	})
+}
+
+// to get information of an acccessToken
+// this function is used to check if a user used two duplicate accounts
+exports.getTokenInfo = function(accessToken, callback){
+	oauth2Client.setCredentials(accessToken);
+	callback(oauth2Client.tokenInfo);
+}
 
 /*
 Template of attributes
@@ -42,18 +55,23 @@ exports.uploadFile = function (accessToken, attributes, callback){
 				    	body: data
 				  	}
 				}, function(err, reply){
+
 					if (err) callback(err, reply);
 					else{
-						console.log("fileid" + reply.id);
-						drive.permissions.insert({
-							fileId: reply.id,
-							resource: {
-								role: "reader",
-								type: "anyone",
-								withLink: true
+						fs.unlink("./uploads/" + attributes.name, function(err){
+							if (err) callback(err, null);
+							else{
+								drive.permissions.insert({
+									fileId: reply.id,
+									resource: {
+										role: "reader",
+										type: "anyone",
+										withLink: true
+									}
+								}, function(err, resp){
+									callback(err, reply);
+								});
 							}
-						}, function(err, resp){
-							callback(err, reply);
 						});
 					}
 				});
@@ -61,6 +79,17 @@ exports.uploadFile = function (accessToken, attributes, callback){
 		});
 	});
 };
+
+exports.deleteFile = function (accessToken, id, callback){
+	oauth2Client.setCredentials(accessToken);
+	oauth2Client.refreshAccessToken(function(err, tokens) {
+		var drive = google.drive({ version: 'v2', auth: oauth2Client });
+
+		drive.files.delete({fileId: id}, function(err){
+			callback(err);
+		});
+	});
+}
 
 // to get data of the file in google drive(e.g. download link, size, ...)
 // id provided by Google Drive
@@ -70,6 +99,18 @@ exports.queryFile = function(accessToken, id, callback){
 		var drive = google.drive({ version: 'v2', auth: oauth2Client });
 
 		drive.files.get({fileId: id}, function(err, reply){
+			callback(err, reply);
+		});
+	});
+}
+
+// to get the available drive size and total drive size
+// return quotaBytesUsed, quotaBytesTotal
+exports.queryDriveSpace = function(accessToken, callback){
+	oauth2Client.setCredentials(accessToken);
+	oauth2Client.refreshAccessToken(function(err, tokens) {
+		var drive = google.drive({ version: 'v2', auth: oauth2Client });
+		drive.about.get({fields:'quotaBytesUsed, quotaBytesTotal, user/emailAddress'}, function(err, reply){
 			callback(err, reply);
 		});
 	});
