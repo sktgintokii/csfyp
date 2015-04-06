@@ -99,7 +99,7 @@ exports.queryDriveSpace = function(accessToken, callback){
 	oauth2Client.setCredentials(accessToken);
 	oauth2Client.refreshAccessToken(function(err, tokens) {
 		var drive = google.drive({ version: 'v2', auth: oauth2Client });
-		drive.about.get({fields:'quotaBytesUsed, quotaBytesTotal'}, function(err, reply){
+		drive.about.get({fields:'quotaBytesUsed, quotaBytesTotal, user/emailAddress'}, function(err, reply){
 			callback(err, reply);
 		});
 	});

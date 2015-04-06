@@ -142,8 +142,9 @@ exports.createFolder = function (dirName, fileid, uid, callback){
 	});
 };
 
+// recursive function to select available drive
 function selectAvailableDrive(entries, filesize, callback){
-	if (entries == []){
+	if (entries.length == 0){
 		callback(null, null);
 	}else{
 		var entry = entries[0];
@@ -235,8 +236,49 @@ exports.getDownloadLink = function(uid, fileid, callback){
 	});
 }
 
-exports.getCapacity = function(uid, callback){
+function getCapacity(entries, callback){
+	if (entries.length == 0){
+		callback(null, []);
+	}else{
+		var entry = entries[0];
+		if (entry.platform == 'Google'){
+			googleapis.queryDriveSpace(entry.Token, function(err, capacity){
+				if (err) callback(err, []);
+				else{
+					entries.shift();
+					getCapacity(entries, function(err, capacities){
+						var newCapacity = {platform: 'Google', email: capacity.user.emailAddress, space: capacity.quotaBytesTotal, usedSpace: capacity.quotaBytesUsed};
+						capacities.unshift(newCapacity);
+						callback(err, capacities);
+					});
+				}
+			});
+		}else if (entry.platform == 'Dropbox'){
+			// TODO: Handle Dropbox upload request
+		}
+	}
+}
 
+exports.getCapacity = function(uid, callback){
+	Token.find({uid: uid}, function(err, entries){
+		if (err) callback(err, entries);
+		else if (entries == []) callback("Access tokens not found", entries);
+		else{
+			getCapacity(entries, function(err, capacities){
+				var capacity = null;
+				if (!err){
+					var totalSpace = 0;
+					var totalUsedSpace = 0;
+					for (var i = 0; i < capacities.length; i++){
+						totalSpace += capacities[i].space;
+						totalUsedSpace += capacities[i].usedSpace;
+					}
+					capacity = {totalSpace: totalSpace, totalUsedSpace: totalUsedSpace, drive: capacities};
+				}
+				callback(err, capacity);
+			});
+		}
+	});
 }
 
 /* The Testing function to dump the whole file structure */

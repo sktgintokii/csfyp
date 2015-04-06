@@ -81,6 +81,14 @@ app.get('/getDownloadLink', function(req, res){
 	});
 });
 
+// IN: session.username
+// OUT: err, capacity
+app.get('/getCapacity', function(req, res){
+	models.getCapacity(req.session.username, function(err, capacity){
+		res.send({err: err, capacity: capacity});
+	});
+});
+
 // IN: files, body.fileid
 // OUT: err, reply
 app.post('/uploadFile', function(req, res){
