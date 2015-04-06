@@ -77,7 +77,6 @@ app.get('/createDir', function (req, res){
 // OUT: err, downloadLink
 app.get('/getDownloadLink', function(req, res){
 	models.getDownloadLink(req.session.username, req.query.fileid, function(err, downloadLink){
-		console.log({err: err, downloadLink: downloadLink});
 		res.send({err: err, downloadLink: downloadLink});
 	});
 });
@@ -87,7 +86,6 @@ app.get('/getDownloadLink', function(req, res){
 app.post('/uploadFile', function(req, res){
 	if(done==true){
 		models.uploadFile(req.session.username, req.body.fileid, req.files, function(err, reply){
-			console.log(reply);
 			res.send({err: err, reply: reply});
 		});
 	}

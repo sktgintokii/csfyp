@@ -55,6 +55,7 @@ exports.uploadFile = function (accessToken, attributes, callback){
 				    	body: data
 				  	}
 				}, function(err, reply){
+
 					if (err) callback(err, reply);
 					else{
 						fs.unlink("./uploads/" + attributes.name, function(err){
@@ -68,7 +69,7 @@ exports.uploadFile = function (accessToken, attributes, callback){
 										withLink: true
 									}
 								}, function(err, resp){
-										
+									callback(err, reply);
 								});
 							}
 						});

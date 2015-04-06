@@ -3,7 +3,6 @@ var Schema = mongoose.Schema;
 var googleapis = require('./googleapis.js');
 mongoose.connect('mongodb://localhost:27017/fyp');
 
-
 User = mongoose.model('users', {name: String, pw: String});
 var fsSchema = Schema({
 	name: String,
@@ -144,18 +143,20 @@ exports.createFolder = function (dirName, fileid, uid, callback){
 };
 
 function selectAvailableDrive(entries, filesize, callback){
-	for (var i = 0; i < entries.length; i++){
-		var entry = entries[i];
+	if (entries == []){
+		callback(null, null);
+	}else{
+		var entry = entries[0];
 		if (entry.platform == 'Google'){
 			googleapis.queryDriveSpace(entry.Token, function(err, reply){
-				if (err){
-					callback(err, null);
-					return;
-				}
+				if (err) callback(err, null);
 				else{
-					if (reply.quotaBytesTotal - reply.quotaBytesUsed >= filesize){
-						callback(err, entry);
-						return;
+					if (reply.quotaBytesTotal - reply.quotaBytesUsed >= filesize) callback(err, entry);
+					else{
+						entries.shift();
+						selectAvailableDrive(entries, filesize, function(err, reply){
+							callback(err, reply);
+						});
 					}
 				}
 			});
@@ -163,21 +164,21 @@ function selectAvailableDrive(entries, filesize, callback){
 			// TODO: Handle Dropbox upload request
 		}
 	}
-	callback(null, null);
 }
 
 exports.uploadFile = function(uid, fileid, files, callback){
 	// Find the accesstoken out from Token database
 	Token.find({uid: uid}, function(err, entries){
 		if (err) callback(err, entry);
-		else if (entries == []) callback("Access tokens not found", entry);
+		else if (entries == []) callback("Access tokens not found", entries);
 		else{
 			selectAvailableDrive(entries, files.upload.size, function(err, entry){
-				if (err) console.log(err, null);
-				if (entry == null) console.log("No enough space", null);
+				if (err) callback(err, null);
+				else if (entry == null) callback("No enough space", null);
 				else{
 					if (entry.platform == 'Google'){
 						// upload file to Google Drive
+
 						googleapis.uploadFile(entry.Token, files.upload, function(err, reply){
 							if (err) callback(err, reply);
 							else{
@@ -188,6 +189,7 @@ exports.uploadFile = function(uid, fileid, files, callback){
 									else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
 									else if (dir.owner != uid) callback("Invalid Credential", null);
 									else{
+
 										// create the new file and add perform add children
 										var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid, owner: uid});
 										dir.children.push(newFile._id);
