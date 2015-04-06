@@ -214,16 +214,16 @@ exports.uploadFile = function(uid, fileid, files, callback){
 }
 
 exports.getDownloadLink = function(uid, fileid, callback){
-	Token.findOne({uid: uid}, function(err, entry){
-		if (err) callback(err, entry);
-		else if (entry == null) callback("Access tokens not found", entry);
+	File.findById(fileid, function(err, file){
+		if (err) callback(err, file);
+		else if (file == null) callback("ID not found", null);
+		else if (file.type == "dir") callback("Cannot download a directory", null);
+		else if (file.did == undefined) callback("No Drive File ID found", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
-			File.findById(fileid, function(err, file){
-				if (err) callback(err, file);
-				else if (file == null) callback("ID not found", null);
-				else if (file.type == "dir") callback("Cannot download a directory", null);
-				else if (file.did == undefined) callback("No Drive File ID found", null);
-				else if (file.owner != uid) callback("Invalid Credential", null);
+			Token.findById(file.drive, function(err, entry){
+				if (err) callback(err, entry);
+				else if (entry == null) callback("Access tokens not found", entry);
 				else{
 					googleapis.queryFile(entry.Token, file.did, function(err, reply){
 						console.log(reply);
@@ -233,6 +233,10 @@ exports.getDownloadLink = function(uid, fileid, callback){
 			});
 		}
 	});
+}
+
+exports.getCapacity = function(uid, callback){
+
 }
 
 /* The Testing function to dump the whole file structure */
