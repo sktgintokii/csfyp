@@ -23,8 +23,8 @@ app.get('/google', function (req, res){
 */
 
 // intermediate layer for getting session
-app.use('/addDrive/getToken', function (req, res){
-	models.addGoogleDrive(req.session.uid, req.query.code, function(err){
+app.use('/getToken', function (req, res){
+	models.addGoogleDrive(req.session.username, req.query.code, function(err){
 		if (err){
 			res.redirect('/addDrive/error?err=' + JSON.stringify(err));
 		} else {
@@ -33,7 +33,7 @@ app.use('/addDrive/getToken', function (req, res){
 	});
 })
 
-app.get('/addDrive/google', function (req, res){
+app.get('/google', function (req, res){
 	var code = req.query.code;
 	if (code){
 		res.redirect('/addDrive/getToken?code=' + code);
@@ -42,14 +42,14 @@ app.get('/addDrive/google', function (req, res){
 	}
 });
 
-app.get('/addDrive/success', function (req, res){
+app.get('/success', function (req, res){
 	res.render('drive-add-success', {
 		title: 'success',
 		layout: false
 	});
 })
 
-app.get('/addDrive/error', function (req, res){
+app.get('/error', function (req, res){
 	res.render('drive-add-err', {
 		title: 'error',
 		layout: false,
