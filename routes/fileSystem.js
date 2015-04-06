@@ -21,7 +21,7 @@ onFileUploadComplete: function (file) {
 // IN: session.username
 // OUT: err, ret
 app.get('/initDir', function (req, res){
-	models.initDir(req.session.username, function(err, ret){
+	models.initDir(req.query.username, function(err, ret){
 		res.send({err: err, ret: ret});
 	});
 });

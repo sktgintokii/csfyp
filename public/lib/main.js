@@ -212,6 +212,9 @@ function fileListDblClickHandler(e){
 	}
 }
 
+function addDriveHandler(e){
+	
+}
 
 function logoutHandler(e){
 	e.preventDefault();
@@ -229,6 +232,7 @@ init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
 document.querySelector('#create-folder-modal .confirm-btn').addEventListener("click", createFolderHandler);
 document.querySelector('#upload-modal .confirm-btn').addEventListener("click", uploadFileHandler);
+$('#add-drive-modal').on('show.bs.modal', addDriveHandler);
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
 

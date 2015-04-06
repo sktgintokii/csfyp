@@ -14,10 +14,12 @@ app.set('view engine', 'handlebars');
 app.use(express.static('public'));
 app.use('/node_modules', express.static('node_modules'))
 
-
+// auth API runs first
 app.use('/', authAPIRouter());
+
 app.use('/fs', fileSystemRouter);
 app.use('/', frontEndRouter());
+
 
 
 app.listen(process.env.PORT || 3000, function() {
