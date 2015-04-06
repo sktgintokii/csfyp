@@ -41,12 +41,12 @@ exports.addGoogleDrive = function (uid, code, callback){
 		if (err) callback(err);
 		else if (token.refresh_token == undefined) callback("Refresh token not found", null);
 		else{
-			googleapis.getAccessToken(code, function(tokenInfo){
-				Token.findOne({owner: tokenInfo.issued_to}, function(err, entry){
+			googleapis.queryDriveSpace(token, function(err, reply){
+				Token.findOne({owner: reply.user.emailAddress}, function(err, entry){
 					if (err) callback(err);
 					else if (entry != null) callback("Duplicate Google Account");
 					else{
-						var accessToken = new Token({uid: uid, platform: "Google", owner: tokenInfo.issued_to, Token: token});
+						var accessToken = new Token({uid: uid, platform: "Google", owner: reply.user.emailAddress, Token: token});
 						accessToken.save(function(err){
 							callback(err);
 						})
