@@ -69,6 +69,20 @@ function showFileList(err, res){
 
 }
 
+function deleteFileById(fileId){
+	superagent
+		.get('/fs/deleteFile')
+		.query({fileid: fileId})
+		.end(function (err, res){
+			var error = err || res.err;
+			if (error){
+				return console.log('Error when deleting file');
+			}
+
+			init();
+		});
+}
+
 function init(){
 	dir = getQueryString()['dir'];
 	uid = document.querySelector('#user-id').innerHTML;
@@ -212,9 +226,7 @@ function fileListDblClickHandler(e){
 	}
 }
 
-function addDriveHandler(e){
-	
-}
+
 
 function logoutHandler(e){
 	e.preventDefault();
@@ -244,18 +256,18 @@ function handleFileSelect(evt) {
 	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
 }
 
-	function handleDragOver(evt) {
-    	evt.stopPropagation();
-	    evt.preventDefault();
-	    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
-	}
+function handleDragOver(evt) {
+	evt.stopPropagation();
+    evt.preventDefault();
+    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+}
 
 //---------------------  Start of execution of main.js -----------------
 init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
 document.querySelector('#create-folder-modal .confirm-btn').addEventListener("click", createFolderHandler);
 document.querySelector('#upload-modal .confirm-btn').addEventListener("click", uploadFileHandler);
-$('#add-drive-modal').on('show.bs.modal', addDriveHandler);
+
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
 

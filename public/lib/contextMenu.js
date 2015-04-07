@@ -66,8 +66,16 @@
 $("#file-list > tbody").contextMenu({
     menuSelector: "#contextMenu",
     menuSelected: function (invokedOn, selectedMenu) {
+        if (selectedMenu.text().toLowerCase() === 'delete'){
+            var fileId = invokedOn.parent().attr('fileid');
+            deleteFileById(fileId);
+        }
+
+
+        /*
         var msg = "You selected the menu item '" + selectedMenu.text() +
             "' on the value '" + invokedOn.text() + "'";
         alert(msg);
+        */
     }
 });
