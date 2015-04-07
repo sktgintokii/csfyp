@@ -16,12 +16,13 @@ app.set('view engine', 'handlebars');
 app.use(express.static('public'));
 app.use('/node_modules', express.static('node_modules'))
 
-// 
 app.use('/account', accountRouter());
 
 // auth API runs first
 app.use('/', authAPIRouter());
 app.use('/fs', fileSystemRouter);
+
+app.use('/addDrive', addDriveRouter);
 
 app.use('/', frontEndRouter());
 
