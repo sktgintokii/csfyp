@@ -74,9 +74,9 @@ function deleteFileById(fileId){
 		.get('/fs/deleteFile')
 		.query({fileid: fileId})
 		.end(function (err, res){
-			var error = err || res.err;
+			var error = err || res.body.err;
 			if (error){
-				return console.log('Error when deleting file');
+				return console.log('Error when deleting file: %s', error);
 			}
 
 			init();
@@ -117,8 +117,63 @@ function init(){
 			
 	}
 
+	superagent
+		.get('/fs/getCapacity')
+		.end(function (err, res){
+			var error = err || res.body.err;
+			if (error){
+				return console.log(error);
+			}
 
+			var capacity = res.body.capacity;
+			var usedSpace = Number(capacity.totalSpace) - Number(capacity.totalUsedSpace);
+
+			console.log(res.body.capacity, usedSpace, Number(capacity.totalSpace), Number(capacity.totalUsedSpace))
+			editChart(usedSpace, capacity.totalUsedSpace)
+
+		});
 };
+
+function drawChart() {
+	var data = google.visualization.arrayToDataTable([
+	  ['State of space allocated', 'Bytes'],
+	  ['Unused',     1],
+	  ['Used',      0]
+	]);
+
+	var options = {
+	  title: 'My Daily Activities',
+	  sliceVisibilityThreshold: 0,
+	  width: 500,
+	  height: 500
+	};
+
+	var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+	chart.draw(data, options);
+}
+
+function editChart(unusedSpace, usedSpace){
+	unusedSpace /= (1024 * 1024);
+	usedSpace /= (1024 * 1024);
+
+	var data = google.visualization.arrayToDataTable([
+	  ['State of space allocated', 'MB'],
+	  ['Unused space (MB)', parseFloat(unusedSpace.toFixed(2))],
+	  ['Used space (MB)', parseFloat(usedSpace.toFixed(2))]
+	]);
+
+	var options = {
+	  title: 'Total Space Usage',
+	  sliceVisibilityThreshold: 0,
+	  width: 500,
+	  height: 500
+	};
+
+	var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+	chart.draw(data, options);
+}
 
 //----------------List of Event Handlers-------------------
 function createFolderHandler(e){
@@ -264,6 +319,9 @@ function handleDragOver(evt) {
 
 //---------------------  Start of execution of main.js -----------------
 init();
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
 document.querySelector('#create-folder-modal .confirm-btn').addEventListener("click", createFolderHandler);
 document.querySelector('#upload-modal .confirm-btn').addEventListener("click", uploadFileHandler);

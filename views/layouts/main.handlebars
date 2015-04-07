@@ -28,7 +28,7 @@
 					</a>
 				</li>
 				<li>
-					<a href="#">
+					<a href="#" data-toggle="modal" data-target="#drive-details-modal">
 						<i class="fa fa-server"></i>Drives details
 					</a>
 				</li>
@@ -214,6 +214,26 @@
 	</div>
 </div>
 
+<div class="modal" id="drive-details-modal" tabindex="-1" role="dialog" aria-labelledby="drive-details-label" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">Drive details</h4>
+			</div>
+			<div class="modal-body">
+				<div id="piechart"></div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-default close-btn" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
 <nav class="navbar navbar-default navbar-fixed-bottom">
   	<div class="container">
   		<div class="alert alert-info pull-right show" role="alert">Upload processing</div>
@@ -224,6 +244,7 @@
 	<script src="/lib/googleLogin.js" async defer></script>
 	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 	<script src="/lib/superagent.0.15.7.min.js"></script>
+	<script src="https://www.google.com/jsapi"></script>
 	<script src="/lib/main.js"></script>
 	<script src="/lib/contextMenu.js"></script>
 	<script src="/lib/bootstrap/bootstrap.min.js"></script>
