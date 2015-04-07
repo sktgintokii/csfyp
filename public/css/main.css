@@ -47,5 +47,8 @@
 	visibility: hidden;
 }
 
+#main-file-panel{
+	min-height: 600px;
+}
 
 
