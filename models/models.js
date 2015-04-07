@@ -339,7 +339,6 @@ function deleteFile(fileid, uid, callback){
 												}else if (token.platform == 'Dropbox'){
 													// TODO: Dropbox delete
 												}
-												callback(err);
 											}
 										});
 									}
