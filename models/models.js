@@ -39,12 +39,12 @@ exports.deleteUser = function (name, callback){
 exports.addGoogleDrive = function (uid, code, callback){
 	googleapis.getAccessToken(code, function(err, token){
 		if (err) callback(err);
-		else if (token.refresh_token == undefined) callback("Refresh token not found", null);
 		else{
 			googleapis.queryDriveSpace(token, function(err, reply){
 				Token.findOne({owner: reply.user.emailAddress}, function(err, entry){
 					if (err) callback(err);
 					else if (entry != null) callback("Duplicate Google Account");
+					else if (token.refresh_token == undefined) callback("Refresh token not found", null);
 					else{
 						var accessToken = new Token({uid: uid, platform: "Google", owner: reply.user.emailAddress, Token: token});
 						accessToken.save(function(err){
