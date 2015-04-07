@@ -227,6 +227,29 @@ function logoutHandler(e){
 	form.submit();
 }
 
+function handleFileSelect(evt) {
+	evt.stopPropagation();
+	evt.preventDefault();
+
+	var files = evt.dataTransfer.files; // FileList object.
+
+	// files is a FileList of File objects. List some properties.
+	var output = [];
+	for (var i = 0, f; f = files[i]; i++) {
+		output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+      		f.size, ' bytes, last modified: ',
+          	f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+          	'</li>');
+	}
+	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+}
+
+	function handleDragOver(evt) {
+    	evt.stopPropagation();
+	    evt.preventDefault();
+	    evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+	}
+
 //---------------------  Start of execution of main.js -----------------
 init();
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
@@ -235,6 +258,11 @@ document.querySelector('#upload-modal .confirm-btn').addEventListener("click", u
 $('#add-drive-modal').on('show.bs.modal', addDriveHandler);
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
+
+// Drag and drop upload
+var dropZone = document.querySelector('.drop_zone');
+dropZone.addEventListener('dragover', handleDragOver, false);
+dropZone.addEventListener('drop', handleFileSelect, false);
 
 
 
