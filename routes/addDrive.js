@@ -53,7 +53,7 @@ app.get('/error', function (req, res){
 	res.render('drive-add-err', {
 		title: 'error',
 		layout: false,
-		err: err
+		err: req.query.err
 	});
 })
 
