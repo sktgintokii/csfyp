@@ -40,7 +40,7 @@ exports.uploadFile = function (accessToken, attributes, callback){
 		if (err) callback(err, null);
 		else{
 			client.put(attributes.name, data, function(status, reply){
-				if (status != 200) console.log(reply, null);
+				if (status != 200) callback(reply, null);
 				else{
 					fs.unlink("./uploads/" + attributes.name, function(err){
 						callback(err, reply);
@@ -51,10 +51,27 @@ exports.uploadFile = function (accessToken, attributes, callback){
 	});
 };
 
+exports.deleteFile = function (accessToken, id, callback){
+	var client = dboxapp.client(accessToken);
+	client.rm(id, function(status, reply){
+		if (status != 200) callback(reply);
+		else callback(null);
+	});
+}
+
+exports.getDownloadLink = function(accessToken, id, callback){
+	var client = dboxapp.client(accessToken);
+	client.shares(id, {short_url: false}, function(status, reply){
+		console.log(reply);
+		if (status != 200) callback(reply, null);
+		else callback(null, reply);
+	});
+}
+
 exports.getRequestToken = function(callback){
-	dboxapp.requesttoken(function(status, token){
+	dboxapp.requesttoken(function(status, reply){
 		if (status != 200) callback(token, null);
-		else callback(null, token);
+		else callback(null, reply);
 	});
 }
 

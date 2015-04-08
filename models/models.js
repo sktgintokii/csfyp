@@ -255,7 +255,7 @@ exports.uploadFile = function(uid, fileid, files, callback){
 									else if (dir.owner != uid) callback("Invalid Credential", null);
 									else{
 										// create the new file and add perform add children
-										var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid, owner: uid});
+										var newFile = new File({name: files.upload.originalname, type: "file", did: reply.path, drive: entry._id, children: [], parent: fileid, owner: uid});
 										dir.children.push(newFile._id);
 										File.findByIdAndUpdate(fileid, dir, function(err){
 											if (err) callback(err, null);
@@ -287,10 +287,17 @@ exports.getDownloadLink = function(uid, fileid, callback){
 				if (err) callback(err, entry);
 				else if (entry == null) callback("Access tokens not found", entry);
 				else{
-					googleapis.queryFile(entry.Token, file.did, function(err, reply){
-						console.log(reply);
-						callback(err, reply.webContentLink);
-					});
+					if (entry.platform == 'Google'){
+						googleapis.queryFile(entry.Token, file.did, function(err, reply){
+							callback(err, reply.webContentLink);
+						});
+					}else if (entry.platform == 'Dropbox'){
+						dropboxapis.getDownloadLink(entry.Token, file.did, function(err, reply){
+							console.log(reply);
+							// Force Download
+							callback(err, reply.url.replace('dl=0', 'dl=1'));
+						})
+					}
 				}
 			});
 		}
@@ -410,6 +417,9 @@ function deleteFile(fileid, uid, callback){
 													});
 												}else if (token.platform == 'Dropbox'){
 													// TODO: Dropbox delete
+													dropboxapis.deleteFile(token.Token, file.did, function(err){
+														callback(err);
+													})
 												}
 											}
 										});
