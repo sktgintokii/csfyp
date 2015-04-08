@@ -185,22 +185,27 @@
 			</div>
 			<div class="modal-body">
 				<div class="container-fluid">
-
-
-					<form class="form-horizontal">
-					  <div class="form-group">
-						<label class="col-sm-6 control-label">Sign in with Google</label>
-						<div class="col-sm-6">
-							<a href='{{googleAuthUrl}}' id="addGoogleDrive-btn"> Click here to add </a>
-							<a href="#" style="display:none" id="logoutText" target='myIFrame' onclick="myIFrame.location='https://www.google.com/accounts/Logout'; startLogoutPolling();return false;"> Click here to logout </a>
-						</div>
-
-						</div>
-						
+					<form class="form-horizontal" method="POST" action="{{googleAuthUrl}}" target="_blank">
 						<div class="form-group">
-							<label for="inputPassword" class="col-sm-2 control-label">Password</label>
-							<div class="col-sm-10">
-								<input type="password" class="form-control" id="inputPassword" placeholder="Password">
+							<label class="col-sm-6 control-label">Sign in with Google</label>
+							<div class="col-sm-6">
+								<button id="add-google-btn" type="submit" class="btn">
+									<i class="fa fa-google-plus fa-lg"></i> 
+									<span>Click to add Drive</span>
+								</button>
+							</div>
+						</div>
+					</form>
+
+
+					<form class="form-horizontal" method="POST" action="/addDrive/getReqToken/dropbox" target="_blank">
+						<div class="form-group">
+							<label class="col-sm-6 control-label">Sign in with Dropbox</label>
+							<div class="col-sm-6">
+								<button id="add-dropbox-btn" type="submit" class="btn">
+									<i class="fa fa-dropbox fa-lg"></i> 
+									<span>Click to add Drive</span>
+								</button>
 							</div>
 						</div>
 					</form>
@@ -241,7 +246,6 @@
 </nav>
 	{{{body}}}
 </body>
-	<script src="/lib/googleLogin.js" async defer></script>
 	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 	<script src="/lib/superagent.0.15.7.min.js"></script>
 	<script src="https://www.google.com/jsapi"></script>

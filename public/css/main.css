@@ -51,6 +51,15 @@
 	min-height: 600px;
 }
 
+#add-dropbox-btn{
+	background-color: #007EE5;
+	color: white;
+}
+
+#add-google-btn{
+	background-color: #DF4A32;
+	color: white;
+}
 
 
 
