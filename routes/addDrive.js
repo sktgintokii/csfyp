@@ -24,12 +24,12 @@ app.get('/google', function (req, res){
 */
 
 app.use('/getReqToken/dropbox', function(req, res){
-	dropboxapis.getRequestToken(function(status, token){
-		if (status === 200){
+	dropboxapis.getRequestToken(function(err, token){
+		if (!err){
 			req.session.reqToken = token;
 			res.redirect(token.authorize_url + '&oauth_callback=' + req.protocol + "://" + req.headers.host + '/addDrive/dropbox');
 		}
-		else res.status(status).end();
+		else res.send({err: err});
 	});
 });
 
@@ -51,6 +51,7 @@ app.use('/getToken/dropbox', function(req, res){
 		} else{
 			res.redirect('/addDrive/success');
 		}
+		delete req.session.reqToken;
 	});
 });
 

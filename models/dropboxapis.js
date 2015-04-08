@@ -1,6 +1,7 @@
 var express = require('express');
 var dbox = require('dbox');
 var dboxapp = dbox.app({'app_key': 'hd3yg65610nyn3z', 'app_secret': '3x03qjvc55bec7u'});
+var fs = require('fs');
 
 /*
 var dbox = require("dbox");
@@ -20,18 +21,48 @@ client.get(filePath, function(status, reply){
 });
 */
 
+/*
+Template of attributes
+{ fieldname: 'userPhoto',
+     originalname: '11045879_979045172108200_327412626_o.jpg',
+     name: '11045879_979045172108200_327412626_o1427047054618.jpg',
+     encoding: '7bit',
+     mimetype: 'image/jpeg',
+     path: 'uploads/11045879_979045172108200_327412626_o1427047054618.jpg',
+     extension: 'jpg',
+     size: 314839,
+     truncated: false,
+     buffer: null } }
+*/
+exports.uploadFile = function (accessToken, attributes, callback){
+	var client = dboxapp.client(accessToken);
+	fs.readFile(attributes.path, function (err, data){
+		if (err) callback(err, null);
+		else{
+			client.put(attributes.name, data, function(status, reply){
+				if (status != 200) console.log(reply, null);
+				else{
+					fs.unlink("./uploads/" + attributes.name, function(err){
+						callback(err, reply);
+					});
+				}
+			});
+		}
+	});
+};
+
 exports.getRequestToken = function(callback){
 	dboxapp.requesttoken(function(status, token){
-		callback(status, token);
+		if (status != 200) callback(token, null);
+		else callback(null, token);
 	});
 }
 
 // to get accessToken
 exports.getAccessToken = function(requestToken, callback){
 	dboxapp.accesstoken(requestToken, function(status, accessToken){
-		console.log(status);
-		console.log(accessToken);
-		callback(status, accessToken);
+		if (status != 200) callback(accessToken, null);
+		else callback(null, accessToken);
 	});
 }
 
@@ -40,6 +71,7 @@ exports.getAccessToken = function(requestToken, callback){
 exports.queryDriveSpace = function(accessToken, callback){
 	var client = dboxapp.client(accessToken);
 	client.account(function(status, reply){
-		callback(status, reply);
+		if (status != 200) callback(reply, null);
+		else callback(null, reply);
 	});
 }

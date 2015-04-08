@@ -62,12 +62,11 @@ exports.addGoogleDrive = function (uid, code, callback){
 };
 
 exports.addDropboxDrive = function (uid, requestToken, callback){
-	dropboxapis.getAccessToken(requestToken, function(status, token){
-		if (status != 200) callback(status);
+	dropboxapis.getAccessToken(requestToken, function(err, token){
+		if (err) callback(err);
 		else{
-			dropboxapis.queryDriveSpace(token, function(status, reply){
-				console.log(reply);
-				if (status != 200) callback(status);
+			dropboxapis.queryDriveSpace(token, function(err, reply){
+				if (err) callback(err);
 				else{
 					Token.findOne({owner: reply.email, platform: 'Dropbox'}, function(err, entry){
 						if (err) callback(err);
@@ -191,7 +190,18 @@ function selectAvailableDrive(entries, filesize, callback){
 				}
 			});
 		}else if (entry.platform == 'Dropbox'){
-			// TODO: Handle Dropbox upload request
+			dropboxapis.queryDriveSpace(entry.Token, function(err, reply){
+				if (err) callback(err, null);
+				else{
+					if (reply.quota_info.quota - reply.quota_info.normal >= filesize) callback(err, entry);
+					else{
+						entries.shift();
+						selectAvailableDrive(entries, filesize, function(err, reply){
+							callback(err, reply);
+						});
+					}
+				}
+			});
 		}
 	}
 }
@@ -219,7 +229,6 @@ exports.uploadFile = function(uid, fileid, files, callback){
 									else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
 									else if (dir.owner != uid) callback("Invalid Credential", null);
 									else{
-
 										// create the new file and add perform add children
 										var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid, owner: uid});
 										dir.children.push(newFile._id);
@@ -234,7 +243,30 @@ exports.uploadFile = function(uid, fileid, files, callback){
 							}
 						});
 					}else if (entry.platform == 'Dropbox'){
-						// TODO: Handle Dropbox upload request
+						dropboxapis.uploadFile(entry.Token, files.upload, function(err, reply){
+							console.log(reply);
+							if (err) callback(err, reply);
+							else{
+								// Find out the directory by fileid
+								File.findById(fileid, function(err, dir){
+									if (err) callback(err, dir);
+									else if (dir == null) callback("ID not found", null);
+									else if (dir.type != "dir") callback("Cannot upload file to a non-directory", null);
+									else if (dir.owner != uid) callback("Invalid Credential", null);
+									else{
+										// create the new file and add perform add children
+										var newFile = new File({name: files.upload.originalname, type: "file", did: reply.id, drive: entry._id, children: [], parent: fileid, owner: uid});
+										dir.children.push(newFile._id);
+										File.findByIdAndUpdate(fileid, dir, function(err){
+											if (err) callback(err, null);
+											newFile.save(function(err){
+												callback(err, newFile);
+											});
+										});
+									}
+								});
+							}
+						});
 					}
 				}
 			});
@@ -285,8 +317,8 @@ function getCapacity(entries, callback){
 			});
 		}else if (entry.platform == 'Dropbox'){
 			// TODO: Handle Dropbox upload request
-			dropboxapis.queryDriveSpace(entry.Token, function(status, capacity){
-				if (status != 200) callback(err, []);
+			dropboxapis.queryDriveSpace(entry.Token, function(err, capacity){
+				if (err) callback(err, []);
 				else{
 					entries.shift();
 					getCapacity(entries, function(err, capacities){
