@@ -478,6 +478,79 @@ exports.deleteFile = function(fileid, uid, callback){
 	});
 };
 
+exports.moveFile = function(sfileid, dfileid, uid, callback){
+	File.findById(sfileid, function(err, sfile){
+		if (err) callback(err);
+		else if (sfile == null) callback("Source File ID not found");
+		else if (sfile.owner != uid) callback("Invalid Credential");
+		else{
+			File.findById(dfileid, function(err, dfile){
+				if (err) callback(err);
+				else if (dfile == null) callback("Destination File ID not found");
+				else if (dfile.owner != uid) callback("Invalid Credential");
+				else if (dfile.type != 'dir') callback("Moving a file to a non-directory");
+				else{
+					// validate not root
+					FileSystem.findOne({uid: uid}, function(err, user){
+						if (err) callback(err);
+						else if (user == null) callback("uid not found");
+						else if (user.root == sfileid) callback("Cannot move root directory");
+						else{
+							// Validate if source file is not ancestor of destination file
+							getAncestor(dfileid, uid, function(err, ancestor){
+								if (err) callback(err);
+								else{
+									var valid = true;
+									for (var i = 0; i < ancestor.length; i++){
+										if (ancestor[i]._id == sfileid){
+											valid = false;
+											break;
+										}
+									}
+									if (!valid) callback("Cannot move a directory to its descendant");
+									else{
+										// adding a child to destination dir
+										dfile.children.push(sfileid);
+										File.findByIdAndUpdate(dfileid, dfile, function(err){
+											if (err) callback(err);
+											else{
+												// Find parent of source file, delete it's child
+												File.findById(sfile.parent, function(err, parentDir){
+													if (err) callback(err);
+													else if (parentDir == null) callback("parent ID not found");
+													else if (parentDir.owner != uid) callback("Invalid Credential");
+													else{
+														for (var i = 0; i < parentDir.children.length; i++){
+															if (parentDir.children[i]._id == sfileid){
+																parentDir.children.splice(i, 1);
+																break;
+															}
+														}
+														File.findByIdAndUpdate(sfile.parent, parentDir, function(err){
+															// Update parent of source file
+															if (err) callback(err);
+															else{
+																sfile.parent = dfileid;
+																File.findByIdAndUpdate(sfileid, sfile, function(err){
+																	callback(err);
+																})
+															}
+														});
+													}
+												});
+											}
+										});
+									}
+								}
+							});
+						}
+					});
+				}
+			});
+		}
+	});
+}
+
 /* The Testing function to dump the whole file structure */
 function dumpStructure(id, prefix){
 	File.findById(id, function(err, file){

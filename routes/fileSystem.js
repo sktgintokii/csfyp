@@ -103,7 +103,14 @@ app.get('/getCapacity', function(req, res){
 // OUT: err
 app.get('/deleteFile', function (req, res){
 	models.deleteFile(req.query.fileid, req.session.username, function(err){
-		console.log(err);
+		res.send({err: err});
+	});
+});
+
+// IN: sfileid, dfileid
+// OUT: err
+app.get('/moveFile', function (req, res){
+	models.moveFile(req.query.sfileid, req.query.dfileid, req.session.username, function(err){
 		res.send({err: err});
 	});
 });
