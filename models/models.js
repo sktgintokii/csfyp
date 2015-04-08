@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var googleapis = require('./googleapis.js');
+var dropboxapis = require('./dropboxapis.js');
 mongoose.connect('mongodb://localhost:27017/fyp');
 
 User = mongoose.model('users', {name: String, pw: String});
@@ -41,18 +42,46 @@ exports.addGoogleDrive = function (uid, code, callback){
 		if (err) callback(err);
 		else{
 			googleapis.queryDriveSpace(token, function(err, reply){
-				Token.findOne({owner: reply.user.emailAddress}, function(err, entry){
-					if (err) callback(err);
-					else if (entry != null) callback("Duplicate Google Account");
-					else if (token.refresh_token == undefined) callback("Refresh token not found", null);
-					else{
-						var accessToken = new Token({uid: uid, platform: "Google", owner: reply.user.emailAddress, Token: token});
-						accessToken.save(function(err){
-							callback(err);
-						})
-					}
-				})
+				if (err) callbackk(err);
+				else{
+					Token.findOne({owner: reply.user.emailAddress}, function(err, entry){
+						if (err) callback(err);
+						else if (entry != null) callback("Duplicate Google Account");
+						else if (token.refresh_token == undefined) callback("Refresh token not found", null);
+						else{
+							var accessToken = new Token({uid: uid, platform: "Google", owner: reply.user.emailAddress, Token: token});
+							accessToken.save(function(err){
+								callback(err);
+							})
+						}
+					});
+				}
 			});
+		}
+	});
+};
+
+exports.addDropboxDrive = function (uid, requestToken, callback){
+	dropboxapis.getAccessToken(requestToken, function(status, token){
+		if (status != 200) callback(status);
+		else{
+			dropboxapis.queryDriveSpace(token, function(status, reply){
+				console.log(reply);
+				if (status != 200) callback(status);
+				else{
+					Token.findOne({owner: reply.email, platform: 'Dropbox'}, function(err, entry){
+						if (err) callback(err);
+						else if (entry != null) callback("Duplicate Dropbox Account");
+						else{
+							var accessToken = new Token({uid: uid, platform: 'Dropbox', owner: reply.email, Token: token});
+							accessToken.save(function(err){
+								callback(err);
+							});
+						}
+					});
+				}
+			});
+			
 		}
 	});
 };
@@ -256,6 +285,17 @@ function getCapacity(entries, callback){
 			});
 		}else if (entry.platform == 'Dropbox'){
 			// TODO: Handle Dropbox upload request
+			dropboxapis.queryDriveSpace(entry.Token, function(status, capacity){
+				if (status != 200) callback(err, []);
+				else{
+					entries.shift();
+					getCapacity(entries, function(err, capacities){
+						var newCapacity = {platform: 'Dropbox', email: capacity.email, space: capacity.quota_info.quota, usedSpace: capacity.quota_info.normal};
+						capacities.unshift(newCapacity);
+						callback(err, capacities);
+					});
+				}
+			})
 		}
 	}
 }

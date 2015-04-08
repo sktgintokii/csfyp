@@ -27,14 +27,19 @@ exports.getRequestToken = function(callback){
 }
 
 // to get accessToken
-exports.getAccessToken = function(callback){
-	dboxapp.requesttoken(function(status, request_token){
-		if (status != 200) callback(status, request_token);
-		else{
-			console.log(request_token);
-			dboxapp.accesstoken(request_token, function(status, access_token){
-				callback(status, access_token);
-			});
-		}
+exports.getAccessToken = function(requestToken, callback){
+	dboxapp.accesstoken(requestToken, function(status, accessToken){
+		console.log(status);
+		console.log(accessToken);
+		callback(status, accessToken);
+	});
+}
+
+// to get the available drive size and total drive size
+// return quotaBytesUsed, quotaBytesTotal
+exports.queryDriveSpace = function(accessToken, callback){
+	var client = dboxapp.client(accessToken);
+	client.account(function(status, reply){
+		callback(status, reply);
 	});
 }

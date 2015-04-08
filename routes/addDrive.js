@@ -25,12 +25,15 @@ app.get('/google', function (req, res){
 
 app.use('/getReqToken/dropbox', function(req, res){
 	dropboxapis.getRequestToken(function(status, token){
-		if (status === 200) res.redirect(token.authorize_url);
+		if (status === 200){
+			req.session.reqToken = token;
+			res.redirect(token.authorize_url + '&oauth_callback=' + req.protocol + "://" + req.headers.host + '/addDrive/dropbox');
+		}
 		else res.status(status).end();
 	});
 });
 
-// intermediate layer for getting session
+// intermediate layer for getting sessions
 app.use('/getToken/google', function (req, res){
 	models.addGoogleDrive(req.session.username, req.query.code, function(err){
 		if (err){
@@ -39,7 +42,21 @@ app.use('/getToken/google', function (req, res){
 			res.redirect('/addDrive/success');
 		}
 	});
-})
+});
+
+app.use('/getToken/dropbox', function(req, res){
+	models.addDropboxDrive(req.session.username, req.session.reqToken, function(err){
+		if (err){
+			res.redirect('/addDrive/error?err=' + JSON.stringify(err));
+		} else{
+			res.redirect('/addDrive/success');
+		}
+	});
+});
+
+app.get('/dropbox', function(req, res){
+	res.redirect('/addDrive/getToken/dropbox');
+});
 
 app.get('/google', function (req, res){
 	var code = req.query.code;
@@ -64,6 +81,5 @@ app.get('/error', function (req, res){
 		err: req.query.err
 	});
 })
-
 
 module.exports = app;
