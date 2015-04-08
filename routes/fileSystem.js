@@ -21,7 +21,7 @@ onFileUploadComplete: function (file) {
 // IN: session.username
 // OUT: err, ret
 app.get('/initDir', function (req, res){
-	models.initDir(req.query.username, function(err, ret){
+	models.initDir(req.session.username, function(err, ret){
 		res.send({err: err, ret: ret});
 	});
 });
@@ -103,6 +103,7 @@ app.get('/getCapacity', function(req, res){
 // OUT: err
 app.get('/deleteFile', function (req, res){
 	models.deleteFile(req.query.fileid, req.session.username, function(err){
+		console.log(err);
 		res.send({err: err});
 	});
 });

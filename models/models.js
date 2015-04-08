@@ -271,8 +271,8 @@ exports.getCapacity = function(uid, callback){
 					var totalSpace = 0;
 					var totalUsedSpace = 0;
 					for (var i = 0; i < capacities.length; i++){
-						totalSpace += capacities[i].space;
-						totalUsedSpace += capacities[i].usedSpace;
+						totalSpace += parseInt(capacities[i].space);
+						totalUsedSpace += parseInt(capacities[i].usedSpace);
 					}
 					capacity = {totalSpace: totalSpace, totalUsedSpace: totalUsedSpace, drive: capacities};
 				}
