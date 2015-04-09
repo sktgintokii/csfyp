@@ -8,6 +8,6 @@
 * Recursive upload/download/~~delete~~
 * ~~Monitor Drive status(capacity, etc.)~~
 * Chunking Download/Upload
-* Move folder(Backend / UI)
+* Move folder(~~Backend~~ / UI) = Cut and Paste
 * Search function(Backend / UI)
 * Speed up upload/download
