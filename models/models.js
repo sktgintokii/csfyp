@@ -304,38 +304,24 @@ exports.getDownloadLink = function(uid, fileid, callback){
 	});
 }
 
-// recursive function to get capacity
-function getCapacity(entries, callback){
-	if (entries.length == 0){
-		callback(null, []);
-	}else{
-		var entry = entries[0];
-		if (entry.platform == 'Google'){
-			googleapis.queryDriveSpace(entry.Token, function(err, capacity){
-				if (err) callback(err, []);
-				else{
-					entries.shift();
-					getCapacity(entries, function(err, capacities){
-						var newCapacity = {platform: 'Google', email: capacity.user.emailAddress, space: capacity.quotaBytesTotal, usedSpace: capacity.quotaBytesUsed};
-						capacities.unshift(newCapacity);
-						callback(err, capacities);
-					});
-				}
-			});
-		}else if (entry.platform == 'Dropbox'){
-			// TODO: Handle Dropbox upload request
-			dropboxapis.queryDriveSpace(entry.Token, function(err, capacity){
-				if (err) callback(err, []);
-				else{
-					entries.shift();
-					getCapacity(entries, function(err, capacities){
-						var newCapacity = {platform: 'Dropbox', email: capacity.email, space: capacity.quota_info.quota, usedSpace: capacity.quota_info.normal};
-						capacities.unshift(newCapacity);
-						callback(err, capacities);
-					});
-				}
-			})
-		}
+// function to get a disk capacity
+function getCapacity(id, entry, callback){
+	if (entry.platform == 'Google'){
+		googleapis.queryDriveSpace(entry.Token, function(err, capacity){
+			if (err) callback(err, null);
+			else{
+				var newCapacity = {platform: 'Google', email: capacity.user.emailAddress, space: capacity.quotaBytesTotal, usedSpace: capacity.quotaBytesUsed};
+				callback(err, id, newCapacity);
+			}
+		});
+	}else if (entry.platform == 'Dropbox'){
+		dropboxapis.queryDriveSpace(entry.Token, function(err, capacity){
+			if (err) callback(err, null);
+			else{
+				var newCapacity = {platform: 'Dropbox', email: capacity.email, space: capacity.quota_info.quota, usedSpace: capacity.quota_info.normal};
+				callback(err, id, newCapacity);
+			}
+		})
 	}
 }
 
@@ -344,38 +330,30 @@ exports.getCapacity = function(uid, callback){
 		if (err) callback(err, entries);
 		else if (entries == []) callback("Access tokens not found", entries);
 		else{
-			getCapacity(entries, function(err, capacities){
-				var capacity = null;
-				if (!err){
-					var totalSpace = 0;
-					var totalUsedSpace = 0;
-					for (var i = 0; i < capacities.length; i++){
-						totalSpace += parseInt(capacities[i].space);
-						totalUsedSpace += parseInt(capacities[i].usedSpace);
+			var remainNo = entries.length;
+			var retError = null;
+			var totalSpace = 0;
+			var totalUsedSpace = 0;
+			var capacities = new Array(entries.length);
+			for (var i = 0; i < entries.length; i++){
+				getCapacity(i, entries[i], function(err, id, capacity){
+					if (!err){
+						totalSpace += Number(capacity.space);
+						totalUsedSpace += Number(capacity.usedSpace);
+						capacities[id] = capacity;
+					}else retError = err;
+					remainNo--;
+					if (remainNo == 0){
+						if (retError) callback(retError, null);
+						else{
+							var retCapacity = {totalSpace: totalSpace, totalUsedSpace: totalUsedSpace, drive: capacities};
+							callback(retError, retCapacity);
+						}
 					}
-					capacity = {totalSpace: totalSpace, totalUsedSpace: totalUsedSpace, drive: capacities};
-				}
-				callback(err, capacity);
-			});
+				})
+			}
 		}
 	});
-}
-
-function deleteList(children, uid, callback){
-	if (children.length == 0){
-		callback(null);
-	}else{
-		var fileid = children[0];
-		deleteFile(fileid, uid, function(err){
-			if (err) callback(err);
-			else{
-				children.shift();
-				deleteList(children, uid, function(err){
-					callback(err);
-				});
-			}
-		});
-	}
 }
 
 // support recursive deletion
@@ -438,33 +416,42 @@ function deleteFile(fileid, uid, callback){
 					else if (user == null) callback("uid not found");
 					else if (user.root == fileid) callback("Cannot delete root directory");
 					else{
-						deleteList(file.children, uid, function(err){
-							if (err) callback(err);
-							else{
-								File.findById(file.parent, function(err, parentDir){
-									if (err) callback(err);
-									else if (parentDir == null) callback("ID not found");
-									else if (parentDir.owner != uid) callback("Invalid Credential");
+						// delete all children
+						var remainNo = file.children.length;
+						var retError = null;
+						for (var i = 0; i < file.children.length; i++){
+							deleteFile(file.children[i], uid, function(err){
+								remainNo--;
+								if (err) retError = err;
+								if (remainNo == 0){
+									if (retError) callback(retError);
 									else{
-										for (var i = 0; i < parentDir.children.length; i++){
-											if (parentDir.children[i]._id == fileid){
-												parentDir.children.splice(i, 1);
-												break;
-											}
-										}
-										File.findByIdAndUpdate(file.parent, parentDir, function(err){
+										File.findById(file.parent, function(err, parentDir){
 											if (err) callback(err);
+											else if (parentDir == null) callback("ID not found");
+											else if (parentDir.owner != uid) callback("Invalid Credential");
 											else{
-												// remove the file in FS
-												File.remove({_id: fileid}, function(err){
-													callback(err);
+												for (var i = 0; i < parentDir.children.length; i++){
+													if (parentDir.children[i]._id == fileid){
+														parentDir.children.splice(i, 1);
+														break;
+													}
+												}
+												File.findByIdAndUpdate(file.parent, parentDir, function(err){
+													if (err) callback(err);
+													else{
+														// remove the file in FS
+														File.remove({_id: fileid}, function(err){
+															callback(err);
+														});
+													}
 												});
 											}
 										});
 									}
-								});
-							}
-						});
+								}
+							});
+						}
 					}
 				});
 			}
