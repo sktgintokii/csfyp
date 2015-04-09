@@ -330,27 +330,32 @@ exports.getCapacity = function(uid, callback){
 		if (err) callback(err, entries);
 		else if (entries == []) callback("Access tokens not found", entries);
 		else{
-			var remainNo = entries.length;
-			var retError = null;
-			var totalSpace = 0;
-			var totalUsedSpace = 0;
-			var capacities = new Array(entries.length);
-			for (var i = 0; i < entries.length; i++){
-				getCapacity(i, entries[i], function(err, id, capacity){
-					if (!err){
-						totalSpace += Number(capacity.space);
-						totalUsedSpace += Number(capacity.usedSpace);
-						capacities[id] = capacity;
-					}else retError = err;
-					remainNo--;
-					if (remainNo == 0){
-						if (retError) callback(retError, null);
-						else{
-							var retCapacity = {totalSpace: totalSpace, totalUsedSpace: totalUsedSpace, drive: capacities};
-							callback(retError, retCapacity);
+			if (entries.length == 0){
+				var retCapacity = {totalSpace: 0, totalUsedSpace: 0, drive: []};
+				callback(null, retCapacity);
+			}else{
+				var remainNo = entries.length;
+				var retError = null;
+				var totalSpace = 0;
+				var totalUsedSpace = 0;
+				var capacities = new Array(entries.length);
+				for (var i = 0; i < entries.length; i++){
+					getCapacity(i, entries[i], function(err, id, capacity){
+						if (!err){
+							totalSpace += Number(capacity.space);
+							totalUsedSpace += Number(capacity.usedSpace);
+							capacities[id] = capacity;
+						}else retError = err;
+						remainNo--;
+						if (remainNo == 0){
+							if (retError) callback(retError, null);
+							else{
+								var retCapacity = {totalSpace: totalSpace, totalUsedSpace: totalUsedSpace, drive: capacities};
+								callback(retError, retCapacity);
+							}
 						}
-					}
-				})
+					})
+				}
 			}
 		}
 	});
@@ -419,38 +424,63 @@ function deleteFile(fileid, uid, callback){
 						// delete all children
 						var remainNo = file.children.length;
 						var retError = null;
-						for (var i = 0; i < file.children.length; i++){
-							deleteFile(file.children[i], uid, function(err){
-								remainNo--;
-								if (err) retError = err;
-								if (remainNo == 0){
-									if (retError) callback(retError);
-									else{
-										File.findById(file.parent, function(err, parentDir){
-											if (err) callback(err);
-											else if (parentDir == null) callback("ID not found");
-											else if (parentDir.owner != uid) callback("Invalid Credential");
-											else{
-												for (var i = 0; i < parentDir.children.length; i++){
-													if (parentDir.children[i]._id == fileid){
-														parentDir.children.splice(i, 1);
-														break;
-													}
-												}
-												File.findByIdAndUpdate(file.parent, parentDir, function(err){
-													if (err) callback(err);
-													else{
-														// remove the file in FS
-														File.remove({_id: fileid}, function(err){
-															callback(err);
-														});
-													}
-												});
-											}
-										});
+						if (remainNo == 0){
+							File.findById(file.parent, function(err, parentDir){
+								if (err) callback(err);
+								else if (parentDir == null) callback("ID not found");
+								else if (parentDir.owner != uid) callback("Invalid Credential");
+								else{
+									for (var i = 0; i < parentDir.children.length; i++){
+										if (parentDir.children[i]._id == fileid){
+											parentDir.children.splice(i, 1);
+											break;
+										}
 									}
+									File.findByIdAndUpdate(file.parent, parentDir, function(err){
+										if (err) callback(err);
+										else{
+											// remove the file in FS
+											File.remove({_id: fileid}, function(err){
+												callback(err);
+											});
+										}
+									});
 								}
 							});
+						}else{
+							for (var i = 0; i < file.children.length; i++){
+								deleteFile(file.children[i], uid, function(err){
+									remainNo--;
+									if (err) retError = err;
+									if (remainNo == 0){
+										if (retError) callback(retError);
+										else{
+											File.findById(file.parent, function(err, parentDir){
+												if (err) callback(err);
+												else if (parentDir == null) callback("ID not found");
+												else if (parentDir.owner != uid) callback("Invalid Credential");
+												else{
+													for (var i = 0; i < parentDir.children.length; i++){
+														if (parentDir.children[i]._id == fileid){
+															parentDir.children.splice(i, 1);
+															break;
+														}
+													}
+													File.findByIdAndUpdate(file.parent, parentDir, function(err){
+														if (err) callback(err);
+														else{
+															// remove the file in FS
+															File.remove({_id: fileid}, function(err){
+																callback(err);
+															});
+														}
+													});
+												}
+											});
+										}
+									}
+								});
+							}
 						}
 					}
 				});
@@ -537,6 +567,45 @@ exports.moveFile = function(sfileid, dfileid, uid, callback){
 		}
 	});
 }
+
+// recursive function to search file
+function searchFile(fileid, uid, filename, prefix, callback){
+	File.findById(fileid, function(err, file){
+		if (err) callback(err, []);
+		else if (file == null) callback("File ID not found", []);
+		else if (file.owner != uid) callback("Invalid Credential", []);
+		else if (file.type == 'file'){
+			if (file.name == filename){
+				var ret = JSON.parse(JSON.stringify(file));
+				ret.path = prefix + file.name;
+				callback(null, [ret]);
+			}else callback(null, []);
+		}else{
+			if (file.children.length == 0) callback(null, []);
+			else{
+				var remainNo = file.children.length;
+				var retError = null;
+				var retFiles = [];
+				for (var i = 0; i < file.children.length; i++){
+					searchFile(file.children[i], uid, filename, prefix + file.name + "/", function(err, files){
+						if (err) retError = err;
+						else retFiles = retFiles.concat(files);
+						remainNo--;
+						if (remainNo == 0){
+							callback(retError, retFiles);
+						}
+					});
+				}
+			}
+		}
+	});
+};
+
+exports.searchFile = function(fileid, uid, filename, callback){
+	searchFile(fileid, uid, filename, 'root/', function(err, files){
+		callback(err, files);
+	});
+};
 
 /* The Testing function to dump the whole file structure */
 function dumpStructure(id, prefix){

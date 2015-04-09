@@ -99,7 +99,7 @@ app.get('/getCapacity', function(req, res){
 	});
 });
 
-// IN: fileid
+// IN: fileid, session.username
 // OUT: err
 app.get('/deleteFile', function (req, res){
 	models.deleteFile(req.query.fileid, req.session.username, function(err){
@@ -113,6 +113,14 @@ app.get('/moveFile', function (req, res){
 	models.moveFile(req.query.sfileid, req.query.dfileid, req.session.username, function(err){
 		res.send({err: err});
 	});
+});
+
+// IN: fileid, session.username, filename
+// OUT: err, [file]
+app.get('/searchFile', function(req, res){
+	models.searchFile(req.query.fileid, req.session.username, req.query.filename, function(err, files){
+		res.send({err: err, files: files});
+	})
 });
 
 module.exports = app;
