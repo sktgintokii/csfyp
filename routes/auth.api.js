@@ -104,6 +104,8 @@ module.exports = function (){
 				}
 			});
 */
+		res.clearCookie("cutFileId");
+
 		if (req.body.username === 'ABC' && req.body.password === '123'){
 			req.session.regenerate(function(err){
 				req.session.username = req.body.username;
@@ -120,7 +122,7 @@ module.exports = function (){
 		//otherwise return to admin page
 		var sess = req.session;
 		if (sess){
-			console.log(sess);
+			//console.log(sess);
 			if (sess.user)
 				return next();
 		}

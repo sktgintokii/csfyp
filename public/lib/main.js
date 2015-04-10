@@ -1,5 +1,30 @@
 var dir, uid;
 
+function sendFile(file) {
+    var uri = "/fs/uploadFile";
+    var xhr = new XMLHttpRequest();
+    var fd = new FormData();
+    
+    xhr.open("POST", uri, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            // Handle response.
+            //alert(xhr.responseText); // handle response.
+            console.log(xhr.responseText);
+        }
+    };
+    fd.append('fileid', dir);
+    fd.append('upload', file);
+    // Initiate a multipart/form-data upload
+    xhr.send(fd);
+
+	document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "visible";
+	window.setTimeout(function(){
+		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
+	}, 1500);
+
+}
+
 function getQueryString() {
   	var result = {}, queryString = location.search.slice(1),
       re = /([^&=]+)=([^&]*)/g, m;
@@ -77,6 +102,20 @@ function deleteFileById(fileId){
 			var error = err || res.body.err;
 			if (error){
 				return console.log('Error when deleting file: %s', error);
+			}
+
+			init();
+		});
+}
+
+function moveFileById(sfileid, dfileid){
+	superagent
+		.get('/fs/moveFile')
+		.query({sfileid: sfileid, dfileid: dfileid})
+		.end(function (err, res){
+			var error = err || res.body.err;
+			if (error){
+				return console.log('Error when moving file: %s', error);
 			}
 
 			init();
@@ -299,7 +338,7 @@ function handleFileSelect(evt) {
 	evt.preventDefault();
 
 	var files = evt.dataTransfer.files; // FileList object.
-
+/*
 	// files is a FileList of File objects. List some properties.
 	var output = [];
 	for (var i = 0, f; f = files[i]; i++) {
@@ -309,6 +348,11 @@ function handleFileSelect(evt) {
           	'</li>');
 	}
 	document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+*/
+    for (var i=0; i<files.length; i++) {
+        sendFile(files[i]);
+    }
+
 }
 
 function handleDragOver(evt) {
@@ -333,6 +377,8 @@ document.querySelector('#upload-modal .confirm-btn').addEventListener("click", u
 var dropZone = document.querySelector('.drop_zone');
 dropZone.addEventListener('dragover', handleDragOver, false);
 dropZone.addEventListener('drop', handleFileSelect, false);
+
+
 
 
 

@@ -81,11 +81,11 @@
 
 
 <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
-    <li><a tabindex="-1" href="#">Open</a></li>
-    <li><a tabindex="-1" href="#">Download</a></li>
-    <li><a id='context-menu-delete' tabindex="-1" href="#">Delete</a></li>
-    <li class="divider"></li>
-    <li><a tabindex="-1" href="#">View Details</a></li>
+    <li id='context-menu-open'><a tabindex="-1" href="#">Open</a></li>
+    <li id='context-menu-download'><a tabindex="-1" href="#">Download</a></li>
+    <li id='context-menu-cut'><a  tabindex="-1" href="#">Cut</a></li>
+    <li id='context-menu-paste' class="hidden"><a  tabindex="-1" href="#">Paste</a></li>
+    <li id='context-menu-delete'><a tabindex="-1" href="#">Delete</a></li>
 </ul>
 
 <!-- Modals put here-->
@@ -249,6 +249,7 @@
 	<script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
 	<script src="/lib/superagent.0.15.7.min.js"></script>
 	<script src="https://www.google.com/jsapi"></script>
+	<script src="/lib/cookies.js"></script>
 	<script src="/lib/main.js"></script>
 	<script src="/lib/contextMenu.js"></script>
 	<script src="/lib/bootstrap/bootstrap.min.js"></script>
