@@ -1,3 +1,11 @@
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic);
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:600,400);
+
+body {
+	font-family: 'Source Sans Pro', sans-serif;
+	background-color: white;
+}
+
 #file-list.table > thead{
 	color: #333;
 	background-color: #f5f5f5;
@@ -22,11 +30,13 @@
 }
 
 #file-list > tbody > tr{
-	color: #39c;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 18px;
 }
 
 #file-list > tbody > tr:focus{
-	background-color: #03A9F4;
+	outline: none !important;
+	background-color: #4A148C;
 	color: white;
 }
 
@@ -61,5 +71,44 @@
 	color: white;
 }
 
+#main-aside > .panel-body * {
+	margin-bottom: 10px;
+}
+
+#main-aside {
+	font-size: 16px;
+	border-color: orange;
+}
+
+#main-aside > .panel-heading{
+	background-color: orange;
+	color: white;
+}
+
+#main-aside *{
+	outline: none;
+}
+
+#path-crum {
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	background-color: darkviolet;
+	min-height: 38px;
+	display: block;
+}
+
+#path-crum a{
+	color: white;
+}
+
+.fa-google{
+	color: red;
+	font-size: 16px;
+}
+
+.fa-dropbox{
+	color: blue;
+	font-size: 16px;
+}
 
 

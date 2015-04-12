@@ -1,4 +1,11 @@
 var dir, uid;
+var options = {
+	title: 'My Daily Activities',
+	sliceVisibilityThreshold: 0,
+	width: 400,
+	height: 500,
+	colors: ['#ED1C62', '#ADA6A9']
+};
 
 function sendFile(file) {
     var uri = "/fs/uploadFile";
@@ -75,14 +82,23 @@ function showFileList(err, res){
 	var error = err || res.body.err;
 	if (error)
 		return console.log(error); 
-		
+	
+
 	var array = res.body.dir;
 	var content = '';
 
+
 	for (var i = 0; i < array.length; i++){
 		var file = array[i];
-
+		var iconClass;
+		if (file.type.toLowerCase() === 'dir'){
+			iconClass = 'fa fa-folder-open';
+		} else {
+			iconClass = 'fa fa-file';
+		}
+	
 		content += '<tr tabindex="0" fileid="' + file._id + '">' +
+				'<td aria-label="icon"><i class="' + iconClass + '"</i></td>'+ 
 				'<td aria-label="name">' + file.name + '</td>' +
 				'<td aria-label="type">' + file.type + '</td>' +
 				'<td aria-label="dlLink"><a href="#"><i class="fa fa-cloud-download"></i></a></td>' + 
@@ -173,19 +189,17 @@ function init(){
 		});
 };
 
+
+
 function drawChart() {
 	var data = google.visualization.arrayToDataTable([
 	  ['State of space allocated', 'Bytes'],
-	  ['Unused',     1],
-	  ['Used',      0]
+	  ['Used',      0],
+	  ['Unused',     1]
+	  
 	]);
 
-	var options = {
-	  title: 'My Daily Activities',
-	  sliceVisibilityThreshold: 0,
-	  width: 500,
-	  height: 500
-	};
+
 
 	var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
@@ -198,16 +212,9 @@ function editChart(unusedSpace, usedSpace){
 
 	var data = google.visualization.arrayToDataTable([
 	  ['State of space allocated', 'MB'],
-	  ['Unused space (MB)', parseFloat(unusedSpace.toFixed(2))],
-	  ['Used space (MB)', parseFloat(usedSpace.toFixed(2))]
+	  ['Used space (MB)', parseFloat(usedSpace.toFixed(2))],
+	  ['Unused space (MB)', parseFloat(unusedSpace.toFixed(2))]
 	]);
-
-	var options = {
-	  title: 'Total Space Usage',
-	  sliceVisibilityThreshold: 0,
-	  width: 500,
-	  height: 500
-	};
 
 	var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 

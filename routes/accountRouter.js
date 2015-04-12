@@ -6,8 +6,8 @@ module.exports = function (){
 	// Expected route: /account/register
 	app.use('/register', function (req, res){
 		res.render('register-panel', {
-			title: 'Register',
-			layout: false,
+			title: 'Dr. Hub - Register',
+			layout: 'register',
 		});
 	});
 

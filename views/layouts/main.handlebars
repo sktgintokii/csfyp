@@ -4,9 +4,10 @@
 	<link rel="stylesheet" href="/css/bootstrap.min.css"/>
 	<link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" href="/css/main.css"/>
+	<title>{{title}}</title>
 </head>
 <body>
-	<nav class="navbar navbar-default">
+	<nav class="navbar navbar-default navbar-inverse">
 	<div id="page-header" class="container-fluid">
 
 
@@ -34,15 +35,13 @@
 				</li>
 				<li>
 					<a href="#" data-toggle="modal" data-target="#add-drive-modal">
-						<i class="fa fa-server"></i>Add drive
+						<i class="fa fa-plus"></i>Add drive
 					</a>
 				</li>
-				<li class="divider"></li>
-				<li><a href="#">Separated link</a></li>
 			</ul>
 		</li>
 	</ul>
-	<span class="navbar-brand">Merged Drives</span>
+	<span class="navbar-brand">Dr. Hub</span>
 
 	<ul class="nav navbar-nav navbar-right pull-right">
 		<li id="header-user-menu" class="dropdown">
@@ -96,23 +95,28 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="myModalLabel">Upload file</h4>
+				<h4 class="modal-title" id="myModalLabel"><i class="fa fa-download fa-fw"></i>&nbsp; Upload file
+				</h4>
 			</div>
 			<div class="modal-body">
-				<form id="upload-form" class="form-group" enctype="multipart/form-data" action="/fs/uploadFile" method="post">
-					<label for="upload">File(s) to upload</label>
-					<input id="upload-file-input" type="file" name="upload">
-					<input type="hidden" id="upload-file-dir" name="fileid" value="">
-				</form>
-				<!--Drag and drop upload start-->
-				<div id="drop_zone">Drop files here</div>
-				<output id="list"></output>
-				<!--Drag and drop upload end-->
+				<div class="container-fluid">
+					<form id="upload-form" class="form-group" enctype="multipart/form-data" action="/fs/uploadFile" method="post">
+						<div class="form-group">
+							<label for="upload" class="col-xs-4">File to upload</label>
+							<div class="col-xs-8">
+								<input id="upload-file-input" type="file" name="upload" class="pull-right">
+								<input type="hidden" id="upload-file-dir" name="fileid" value="">
+							</div>
+						</div>
+						
+						
+					</form>
+				</div>
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn btn-primary confirm-btn" data-dismiss="modal">Confirm</button>
-				<button class="btn btn-default close-btn" data-dismiss="modal">Close</button>
+				<button class="btn btn-success confirm-btn" data-dismiss="modal">Confirm</button>
+				<button class="btn btn-danger close-btn" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -125,7 +129,9 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="myModalLabel">Create Folder</h4>
+				<h4 class="modal-title" id="myModalLabel">
+					<i class="fa fa-folder-open fa-fw"></i>&nbsp; Create Folder
+				</h4>
 			</div>
 			<div class="modal-body">
 				<div class="container-fluid">
@@ -139,8 +145,8 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn btn-primary confirm-btn" data-dismiss="modal">Confirm</button>
-				<button class="btn btn-default" data-dismiss="modal">Close</button>
+				<button class="btn btn-success confirm-btn" data-dismiss="modal">Confirm</button>
+				<button class="btn btn-danger" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -168,7 +174,7 @@
 			</div>
 
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -181,15 +187,17 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="myModalLabel">Add Drives</h4>
+				<h4 class="modal-title" id="myModalLabel">
+					<i class="fa fa-plus fa-fw"></i>&nbsp; Add drive
+				</h4>
 			</div>
 			<div class="modal-body">
 				<div class="container-fluid">
 					<form class="form-horizontal" method="POST" action="{{googleAuthUrl}}" target="_blank">
 						<div class="form-group">
-							<label class="col-sm-6 control-label">Sign in with Google</label>
-							<div class="col-sm-6">
-								<button id="add-google-btn" type="submit" class="btn">
+							<label class="col-sm-4 control-label">Sign in with Google</label>
+							<div class="col-sm-8">
+								<button id="add-google-btn" type="submit" class="btn pull-right">
 									<i class="fa fa-google-plus fa-lg"></i> 
 									<span>Click to add Drive</span>
 								</button>
@@ -200,9 +208,9 @@
 
 					<form class="form-horizontal" method="POST" action="/addDrive/getReqToken/dropbox" target="_blank">
 						<div class="form-group">
-							<label class="col-sm-6 control-label">Sign in with Dropbox</label>
-							<div class="col-sm-6">
-								<button id="add-dropbox-btn" type="submit" class="btn">
+							<label class="col-sm-4 control-label">Sign in with Dropbox</label>
+							<div class="col-sm-8">
+								<button id="add-dropbox-btn" type="submit" class="btn pull-right">
 									<i class="fa fa-dropbox fa-lg"></i> 
 									<span>Click to add Drive</span>
 								</button>
@@ -213,7 +221,7 @@
 			</div>
 
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
@@ -226,14 +234,44 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title" id="myModalLabel">Drive details</h4>
+				<h4 class="modal-title" id="myModalLabel">
+					<i class="fa fa-server fa-fw"></i>&nbsp; Drives details
+				</h4>
 			</div>
 			<div class="modal-body">
-				<div id="piechart"></div>
+				<div class="container-fluid">
+					<div class="col-xs-6">
+						<div id="piechart"></div>
+					</div>
+
+					<div class="panel panel-default col-xs-6">
+						<div class="panel-body">
+							<table class="table">
+								<thead class="panel-heading">
+									<tr>
+										<td>Location</td>
+										<td>Email</td>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td><i class="fa fa-google fa-fw"></td>
+										<td>user1@gmail.com</td>
+									</tr>
+									<tr>
+										<td><i class="fa fa-dropbox fa-fw"></td>
+										<td>user2@cuhk.edu.hk</td>
+									</tr>
+								</tbody>
+								
+							</table>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn btn-default close-btn" data-dismiss="modal">Close</button>
+				<button class="btn btn-danger close-btn" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>

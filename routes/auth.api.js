@@ -44,7 +44,7 @@ module.exports = function (){
 		}
 
 		res.render('login-panel', {
-			title: 'login',
+			title: 'Dr. Hub - Login',
 			layout: 'login',
 			csrfToken: req.csrfToken()
 		});

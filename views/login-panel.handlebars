@@ -1,30 +1,26 @@
+<article>
+    <h1 id="title">Welcome to Dr. Hub</h1>
+</article>
 <form id="login-form" method="post" action="api/login" class="login">
-  <p>
-    <label for="login">Email:</label>
-    <input type="text" name="username" id="login" placeholder="Email">
-  </p>
+    <h1>Login Form</h1>
+    <h1 id="reg-icon"><i class="fa fa-user fa-2x"></i></h1>
 
-  <p>
-    <label for="password">Password:</label>
-    <input type="password" name="password" id="password" placeholder="Password">
-  </p>
+    <div class="form-group">
+        <label for="login">Login Name</label>
+        <input type="text" class="form-control" name="username" id="login" placeholder="Enter login name" required>
+    </div>
+    <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+    </div>
 
-  <p class="login-submit">
-    <button type="submit" class="login-button">Login</button>
-  </p>
+    <div>
+        <button type="submit" class="btn btn-success btn-block">Login</button>        
+    </div>
 
-  <p class="forgot-password">
-    <a href="/account/register">Register</a>
-    <a href="reset.html">
-      <span id="forget">Forgot your password?</span>
-    </a>
-    
-  </p>
+    <div>
+        <a class="btn btn-warning btn-block" href="/account/register">Register</a>        
+    </div>
 </form>
 
-<section class="about">
-  <p class="about-author">
-    &copy; 2012&ndash;2013 <a href="http://thibaut.me" target="_blank">Thibaut Courouble</a> -
-    <a href="http://www.cssflow.com/mit-license" target="_blank">MIT License</a><br>
-    Original PSD by <a href="http://365psd.com/day/2-234/" target="_blank">Rich McNabb</a>
-</section>
+
