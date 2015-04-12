@@ -291,6 +291,8 @@ function fileDlLinkHandler(ele){
 		e.preventDefault();
 
 		var fileid = this.parentNode.getAttribute("fileid");
+
+		/*
 		superagent
 			.get('/fs/getDownloadLink')
 			.query({fileid: fileid})
@@ -302,6 +304,9 @@ function fileDlLinkHandler(ele){
 				console.log(res);
 				location.href = res.body.downloadLink;
 			});
+		*/
+		document.getElementById('dl-iframe').src = '/fs/getDownloadLink?fileid=' + fileid;
+		document.getElementById('dl-iframe').click();
 	});
 }
 
