@@ -2,7 +2,7 @@
 
 #TODO:
 * ~~Secuity Improvement(username matching)~~
-* Drag and Drop
+* Drag and Drop upload( Backend / ~~UI~~ )
 * Complete Login System(Register and create a new filesystem for that user)
 * Add ~~Google Drive Account~~/~~Dropbox Account~~, improve UI
 * Recursive upload/download/~~delete~~
