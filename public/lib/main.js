@@ -18,6 +18,7 @@ function sendFile(file) {
             // Handle response.
             //alert(xhr.responseText); // handle response.
             console.log(xhr.responseText);
+            init();
         }
     };
     fd.append('fileid', dir);
