@@ -347,17 +347,34 @@ function uploadFileHandler(e){
 function changePWHandler(e){
 	e.preventDefault();
 
-	var ele = document.forms['change-pw-form'].elements;
+	var form = document.querySelector('#change-pw-form');
+	var data = new FormData(form);
+	jQuery.ajax({
+	    url: '/account/api/changepw',
+	    data: data,
+	    cache: false,
+	    contentType: false,
+	    processData: false,
+	    type: 'POST',
+	    success: function(data){
+	    	if (data.err)
+	    		return console.log(data.err);
+	    },
+	    error: function(){
+	    }
+	});
 
+/*
 	superagent
 		.post('/account/api/changepw')
-		.send(serializeFormData(document.querySelector('#change-pw-form')))
+		.send(serializeFormData())
 		.end(function (err, res){
 			var error = err || res.body.err;
 			if (error){
 				return console.log('Error when changing pw: %s', error);
 			}
 		});
+*/
 }
 
 function fileListHandlers(ele){
