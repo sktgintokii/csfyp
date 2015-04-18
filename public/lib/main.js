@@ -386,9 +386,13 @@ function changePWHandler(e){
 	    	alert('Password has been changed!');
 
 	    },
-	    error: function(err){
-	    	console.log(err);
-	    }
+	    error: function(xhr, error, errorThrown) {  
+           if(xhr.status && xhr.status==400){
+                alert(JSON.parse(xhr.responseText).err); 
+           }else{
+               alert("Fail to change password");
+           }
+          }
 	});
 
 
