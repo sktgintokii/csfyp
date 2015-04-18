@@ -185,20 +185,35 @@ function init(){
 			var usedSpace = Number(capacity.totalSpace) - Number(capacity.totalUsedSpace);
 
 			console.log(res.body.capacity, usedSpace, Number(capacity.totalSpace), Number(capacity.totalUsedSpace))
-			editChart(usedSpace, capacity.totalUsedSpace)
+			editChart(usedSpace, capacity.totalUsedSpace);
 
+			var data = google.visualization.arrayToDataTable([
+			  ['State of space allocated', 'Bytes'],
+			  ['Used',      Number(capacity.totalUsedSpace)],
+			  ['Unused',     Number(capacity.totalSpace) - Number(capacity.totalUsedSpace)]
+			]);
+
+			drawChart(data);
+
+			setDriveDetailsTable(capacity.drive);
 		});
+
+
 };
 
 
 
-function drawChart() {
-	var data = google.visualization.arrayToDataTable([
-	  ['State of space allocated', 'Bytes'],
-	  ['Used',      0],
-	  ['Unused',     1]
-	  
-	]);
+function drawChart(input) {
+	var data;
+	if (input){
+		data = input;
+	} else {
+		data = google.visualization.arrayToDataTable([
+		  ['State of space allocated', 'Bytes'],
+		  ['Used',      0],
+		  ['Unused',     1]
+		]);
+	}
 
 
 
@@ -220,6 +235,28 @@ function editChart(unusedSpace, usedSpace){
 	var chart = new google.visualization.PieChart(document.getElementById('piechart'));
 
 	chart.draw(data, options);
+}
+
+function setDriveDetailsTable(list){
+	var content = '';
+	for (var i = 0; i < list.length; i++){
+		var item = list[i];
+		var icon;
+		if (item.platform.toLowerCase() === 'google'){
+			icon = '<i class="fa fa-google fa-fw"></i>';
+		} else {
+			icon = '<i class="fa fa-dropbox fa-fw"></i>'
+		}
+
+		content += '<tr>' 
+				+ '<td>' + icon + '</td>'
+				+ '<td>' + item.email + '</td>'
+				+ '</tr>';
+
+	}
+
+	var table = document.querySelector('#drive-details-table > tbody');
+	table.innerHTML = content;
 }
 
 //----------------List of Event Handlers-------------------
