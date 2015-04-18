@@ -379,7 +379,8 @@ function downloadFile(uid, fileid, prefix, callback){
 			}else if (file.type == 'dir'){
 				var remainNo = file.children.length;
 				var retError = null;
-				var fileName = prefix + file.name + Date.now();
+				if (prefix == '') var fileName = prefix + file.name + Date.now();
+				else var fileName = prefix + file.name;
 				var fullfileName = process.cwd() + '/Downloads/' + fileName;
 				fs.mkdirSync(fullfileName);
 				for (var i = 0; i < file.children.length; i++){
