@@ -86,15 +86,9 @@ app.get('/getDownloadLink', function(req, res){
 // OUT: err, reply
 app.post('/uploadFile', function(req, res){
 	if(done==true){
-		if (req.body.isDir){
-			models.createFolder(req.files.upload.originalname, req.query.fileid, req.session.username, function(err, dir){
-				res.send({err: err, reply: dir});
-			});
-		}else{
-			models.uploadFile(req.session.username, req.body.fileid, req.body.isDir, req.files, function(err, reply){
-				res.send({err: err, reply: reply});
-			});
-		}
+		models.uploadFile(req.session.username, req.body.fileid, req.files, function(err, reply){
+			res.send({err: err, reply: reply});
+		});
 	}
 });
 
