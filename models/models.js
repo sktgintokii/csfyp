@@ -23,7 +23,7 @@ FileSystem = mongoose.model('FileSystem', {uid: String, root: Schema.Types.Objec
 Token = mongoose.model('Token', {uid: String, platform: String, owner: String, Token: Schema.Types.Mixed});
 
 exports.createUser = function (uid, email, pw1, pw2, callback){
-	if (pw1 != pw2) callback("Passwords do not match!");
+	if (pw1 !== pw2) callback("Passwords do not match!");
 	if (!uid.match(/^[0-9a-zA-Z]+$/)) callback("User name contains invalid characters");
 	else{
 		User.findOne({uid: uid}, function(err, user){
@@ -63,16 +63,45 @@ exports.loginUser = function (uid, password, callback){
 				if (user == null) callback("Username/Password incorrect");
 				else{
 					var hmac = crypto.createHmac('sha256', saltEntry.salt);
-
 					hmac.update(password);
-					var inputpw = hmac.digest('base64');
-					if (inputpw === user.pw) callback(null);
+					var passwordHash = hmac.digest('base64');
+					if (passwordHash === user.pw) callback(null);
 
 					else callback("Username/Password incorrect")
 				}
 			});
 		}
 	});
+}
+
+exports.changePassword = function(uid, oldpw, newpw1, newpw2){
+	if (newpw1 !== newpw2) callback("New passwords do not match!");
+	else{
+		Salt.findOne({uid: uid}, function(err, saltEntry){
+			if (err) callback(err);
+			if (saltEntry == null) callback("Username not found");
+			else{
+				User.findOne({uid: uid}, function(err, user){
+					if (err) callback(err);
+					if (user == null) callback("Username/Password incorrect");
+					else{
+						var hmac = crypto.createHmac('sha256', saltEntry.salt);
+						hmac.update(oldpw);
+						var oldpwHash = hmac.digest('base64');
+						if (oldpwHash !== user.pw) callback('Username/Password incorrect');
+						else{
+							hmac.update(newpw1);
+							var newpwHash = hmac.digest('base64');
+							user.pw = newpwHash;
+							User.findByIdAndUpdate(user._id, user, function(err){
+								callback(err);
+							});
+						}
+					}
+				});
+			}
+		});
+	}
 }
 
 exports.addGoogleDrive = function (uid, code, callback){

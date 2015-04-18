@@ -27,18 +27,13 @@ function onSubmitHandler(e) {
 		.send(serializeFormData(this))
 		.end(function (res) {
 			if (res.error) {
-				if (res.body.err) {
-					res.body.err.forEach(function(input){
-						alert(input.msg);
-					});
-				}
 				alert(res.body.err || res.error);
 				return console.error(res.body.err || res.error);
 			}
 
 			alert('Account is created Successfully');
 			// refresh the page with latest results
-			//location.href = '/';
+			location.href = '/';
 		});
 }
 
