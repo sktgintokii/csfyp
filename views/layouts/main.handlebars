@@ -253,7 +253,7 @@
 			</div>
 			<div class="modal-body">
 				<div class="container-fluid">
-					<form class="form-horizontal" id="change-pw-form" method="POST" action="/account/api/changepw">
+					<form enctype="application/x-www-form-urlencoded" class="form-horizontal" id="change-pw-form" method="POST" action="/account/api/changepw">
 						<input type="hidden" name="userid" value="{{uid}}">
 						<div id="old-pw-input-group" class="form-group">
 							<label for="create-folder-input" class="col-xs-4 control-label">Current Password</label>

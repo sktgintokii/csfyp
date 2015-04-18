@@ -21,6 +21,7 @@ module.exports = function (){
 	});
 
 	app.post('/api/changepw', function(req, res){
+		console.log(req.body.userid);
 		models.changePassword(req.body.userid, req.body.oldpw, req.body.newpw1, req.body.newpw2, function(err){
 			if (err) return res.status(400).json({err: err}).end();
 			else return res.status(200).end();

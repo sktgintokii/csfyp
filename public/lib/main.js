@@ -376,35 +376,35 @@ function uploadFileHandler(e){
 function changePWHandler(e){
 	e.preventDefault();
 
-	var form = document.querySelector('#change-pw-form');
-	var data = new FormData(form);
+
 	jQuery.ajax({
 	    url: '/account/api/changepw',
-	    data: data,
+	    data: $('#change-pw-form').serialize(),
 	    cache: false,
-	    contentType: false,
-	    processData: false,
 	    type: 'POST',
 	    success: function(data){
-	    	if (data.err){
-	    		alert(data.err);
-	    	}
 	    	alert('Password has been changed!');
 
+	    },
+	    error: function(err){
+	    	console.log(err);
 	    }
 	});
 
-/*
-	superagent
-		.post('/account/api/changepw')
-		.send(serializeFormData())
-		.end(function (err, res){
-			var error = err || res.body.err;
-			if (error){
-				return console.log('Error when changing pw: %s', error);
-			}
-		});
-*/
+
+	// var form = document.querySelector('#change-pw-form');
+	// console.log(serializeFormData(form));
+
+	// superagent
+	// 	.post(form.getAttribute('action'))
+	// 	.send(serializeFormData(form))
+	// 	.end(function (err, res){
+	// 		var error = err || res.body.err;
+	// 		if (error){
+	// 			return console.log('Error when changing pw: %s', error);
+	// 		}
+	// 	});
+
 }
 
 function fileListHandlers(ele){
