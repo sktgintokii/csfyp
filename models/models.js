@@ -74,7 +74,7 @@ exports.loginUser = function (uid, password, callback){
 	});
 }
 
-exports.changePassword = function(uid, oldpw, newpw1, newpw2){
+exports.changePassword = function(uid, oldpw, newpw1, newpw2, callback){
 	if (newpw1 !== newpw2) callback("New passwords do not match!");
 	else{
 		Salt.findOne({uid: uid}, function(err, saltEntry){
