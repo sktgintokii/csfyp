@@ -47,23 +47,13 @@
 		<li id="header-user-menu" class="dropdown">
 			<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
 				<span class="hidden" id="user-id">{{uid}}</span>
-				<span id="user-name">Jim Ng</span>
+				<span id="user-name">{{uid}}</span>
 				<span class="caret"></span>
 			</a>
 			<ul id="user-opt" class="dropdown-menu" role="menu">
 				<li>
-					<a href="#" data-toggle="modal" data-target="#config-modal">
-						<i class="fa fa-folder-open"></i>Configuration
-					</a>
-				</li>
-				<li>
-					<a href="#">
-						<i class="fa fa-download"></i>Option2
-					</a>
-				</li>
-				<li>
-					<a href="#">
-						<i class="fa fa-server"></i>Option3
+					<a href="#" data-toggle="modal" data-target="#password-modal">
+						<i class="fa fa-folder-open"></i>Change Password
 					</a>
 				</li>
 
@@ -152,33 +142,6 @@
 	</div>
 </div>
 
-<div class="modal" id="config-modal" tabindex="-1" role="dialog" aria-labelledby="config-modal-label" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h4 class="modal-title" id="myModalLabel">Configuration</h4>
-			</div>
-			<div class="modal-body">
-				<div class="container-fluid">
-					<div class="col-xs-3">
-
-					</div>
-
-					<div class="col-xs-9">
-						132
-					</div>
-				</div>
-			</div>
-
-			<div class="modal-footer">
-				<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-			</div>
-		</div>
-	</div>
-</div>
 
 <div class="modal" id="add-drive-modal" tabindex="-1" role="dialog" aria-labelledby="add-drive-modal-label" aria-hidden="true">
 	<div class="modal-dialog">
@@ -271,6 +234,50 @@
 			</div>
 
 			<div class="modal-footer">
+				<button class="btn btn-danger close-btn" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal" id="password-modal" tabindex="-1" role="dialog" aria-labelledby="password-label" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					<i class="fa fa-server fa-fw"></i>&nbsp; Change Password
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="container-fluid">
+					<form class="form-horizontal" id="change-pw-form" method="POST" action="/account/api/changepw">
+						<div class="form-group">
+							<label for="create-folder-input" class="col-xs-4 control-label">Current Password</label>
+							<div class="col-xs-6">
+	    						<input type="password" class="form-control" name="oldpw">
+	    					</div>
+	    				</div>
+	    				<div class="form-group">
+							<label for="create-folder-input" class="col-xs-4 control-label">New Password</label>
+							<div class="col-xs-6">
+	    						<input type="password" class="form-control" name="newpw1">
+	    					</div>
+	    				</div>
+	    				<div class="form-group">
+							<label for="create-folder-input" class="col-xs-4 control-label">Confirm Password</label>
+							<div class="col-xs-6">
+	    						<input type="password" class="form-control" name="newpw2">
+	    					</div>
+	    				</div>
+					</form>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn btn-success confirm-btn" data-dismiss="modal">Confirm</button>
 				<button class="btn btn-danger close-btn" data-dismiss="modal">Close</button>
 			</div>
 		</div>

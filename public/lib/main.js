@@ -8,6 +8,19 @@ var options = {
 	colors: ['#ED1C62', '#ADA6A9']
 };
 
+function serializeFormData(form) {
+	return [].map.call(form.elements, function(el) {
+		if (el.name && !el.disabled 
+				&& (!el.type || el.type.toLowerCase() !== 'checkbox' || el.checked)) {
+			if (el.tagName === 'SELECT' && el.hasAttribute('multiple'))
+				return [].map.call(el.selectedOptions, function(o) {
+					return [el.name, o.value].map(encodeURIComponent).join('=');
+				}).join('&');
+			return [el.name, el.value].map(encodeURIComponent).join('=');
+		}
+	}).join('&');
+};
+
 function sendFile(file) {
     var uri = "/fs/uploadFile";
     var xhr = new XMLHttpRequest();
@@ -299,9 +312,7 @@ function uploadFileHandler(e){
 	var form = document.querySelector('#upload-form');
 
 	document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "visible";
-	window.setTimeout(function(){
-		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
-	}, 1500);
+	fileUploadCnt += 1;
 
 	var data = new FormData(form);
 	jQuery.ajax({
@@ -316,13 +327,37 @@ function uploadFileHandler(e){
 	    		return console.log(data.err);
 	    	init();
 	    	form.reset();
+	    	fileUploadCnt -= 1;
+	    	if (fileUploadCnt < 1){
+	    		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
+	    	}
 
 
 	    },
 	    error: function(){
+	    	fileUploadCnt -= 1;
+	    	if (fileUploadCnt < 1){
+	    		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
+	    	}
 	    	console.log('Fail to upload file');
 	    }
 	});
+}
+
+function changePWHandler(e){
+	e.preventDefault();
+
+	var ele = document.forms['change-pw-form'].elements;
+
+	superagent
+		.post('/account/api/changepw')
+		.send(serializeFormData(document.querySelector('#change-pw-form')))
+		.end(function (err, res){
+			var error = err || res.body.err;
+			if (error){
+				return console.log('Error when changing pw: %s', error);
+			}
+		});
 }
 
 function fileListHandlers(ele){
@@ -426,6 +461,8 @@ google.setOnLoadCallback(drawChart);
 document.querySelector('#logout-opt').addEventListener("click", logoutHandler);
 document.querySelector('#create-folder-modal .confirm-btn').addEventListener("click", createFolderHandler);
 document.querySelector('#upload-modal .confirm-btn').addEventListener("click", uploadFileHandler);
+document.querySelector('#password-modal .confirm-btn').addEventListener("click", changePWHandler);
+
 
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);
