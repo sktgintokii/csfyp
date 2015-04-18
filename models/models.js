@@ -268,7 +268,6 @@ exports.uploadFile = function(uid, fileid, files, callback){
 									driveInfo[id].did = files.upload.originalname + '.' + id;
 									driveInfo[id].size = dist[id];
 								}
-								offset += dist[i];
 								remainNo--;
 								if (remainNo == 0){
 									if (retError) callback(retError, null);
@@ -286,6 +285,7 @@ exports.uploadFile = function(uid, fileid, files, callback){
 												File.findByIdAndUpdate(fileid, dir, function(err){
 													if (err) callback(err, null);
 													newFile.save(function(err){
+														fs.unlinkSync(files.upload.path);
 														callback(err, newFile);
 													});
 												});
@@ -309,7 +309,7 @@ function getTokenById(id, order, callback){
 	});
 }
 
-exports.downloadChunk = function(uid, fileid, callback){
+exports.downloadFile = function(uid, fileid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
@@ -347,7 +347,28 @@ exports.downloadChunk = function(uid, fileid, callback){
 								}
 							});
 						}else if (entry.platform == 'Dropbox'){
-							// TODO: Dropbox grap data
+							// DDMD
+							dropboxapis.downloadChunk(entry.Token, file.dist[id].did, function(err){
+								if (err) retError = err;
+								else{
+									remainNo--;
+									if (remainNo == 0){
+										if (retError) callback(retError, null);
+										else{
+											// Reassembly the file
+											var targetPath = process.cwd() + '/Downloads/' + file.name;
+											fs.writeFileSync(targetPath, '', {flag: 'w'});
+											for (var i = 0; i < file.dist.length; i++){
+												var chunkPath = process.cwd() + '/Downloads/' + file.name + '.' + i;
+												var buffer = fs.readFileSync(chunkPath);
+												fs.writeFileSync(targetPath, buffer, {flag: 'a'});
+												fs.unlinkSync(chunkPath);
+											}
+											callback(err, targetPath);
+										}
+									}
+								}
+							});
 						}
 					}
 				});

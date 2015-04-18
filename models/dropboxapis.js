@@ -34,6 +34,36 @@ Template of attributes
      truncated: false,
      buffer: null } }
 */
+
+function readChunk(path, offset, size, callback){
+	var data = new Buffer(size);
+
+	fs.open(path, 'r', function(err, fd){
+		if (err) callback(err, null);
+		else{
+			var bytesRead = 0;
+			while (bytesRead < size) {
+	            bytesRead += fs.readSync(fd, data, 0, size, offset);
+	        }
+	        fs.closeSync(fd);
+			callback(null, data);
+		}
+	});
+}
+
+exports.uploadChunk = function (accessToken, attributes, offset, size, order, callback){
+	var client = dboxapp.client(accessToken);
+	readChunk(attributes.path, offset, size, function(err, data){
+		if (err) callback(err, order, null);
+		else{
+			client.put(attributes.originalname + '.' + order, data, function(status, reply){
+				if (status != 200) callback(reply, order, null);
+				else callback(null, order, reply);
+			});
+		}
+	});
+};	
+
 exports.uploadFile = function (accessToken, attributes, callback){
 	var client = dboxapp.client(accessToken);
 	fs.readFile(attributes.path, function (err, data){
@@ -47,6 +77,18 @@ exports.uploadFile = function (accessToken, attributes, callback){
 					});
 				}
 			});
+		}
+	});
+};
+
+// id - file id in google drive
+exports.downloadChunk = function (accessToken, id, callback){
+	var client = dboxapp.client(accessToken);
+	client.get(id, function(status, data, reply){
+		if (status != 200) callback(reply, null);
+		else{
+			fs.writeFileSync('./downloads/' + id, data, {flag: 'w'});
+			callback(null, reply);
 		}
 	});
 };
