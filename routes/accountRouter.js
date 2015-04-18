@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
+var models = require('../models/models.js');
 
 var inputPattern = {
 	userid: /\w+/
@@ -13,17 +14,10 @@ module.exports = function (){
 
 
 	app.post('/api/register', function (req, res){
-		req.checkBody('userid', 'Invalid user Id')
-			.matches(inputPattern.userid);
-
-
-		// quit processing if encountered an input validation error
-		var errors = req.validationErrors();
-		if (errors) {
-			return res.status(400).json({'inputError': errors}).end();
-		}
-
-		
+		console.log('fuck you jimmy');
+		models.createUser(req.body.userid, req.body.email, req.body.pw, req.body.pw2, function(err){
+			res.send({err: err});
+		});
 	});
 
 	// Expected route: /account/register

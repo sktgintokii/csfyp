@@ -4,9 +4,11 @@ var Schema = mongoose.Schema;
 var googleapis = require('./googleapis.js');
 var dropboxapis = require('./dropboxapis.js');
 var exec = require('child_process').exec;
+var crypto = require('crypto');
 mongoose.connect('mongodb://localhost:27017/fyp');
 
-User = mongoose.model('users', {name: String, pw: String});
+User = mongoose.model('user', {uid: String, pw: String, email: String});
+Salt = mongoose.model('salt', {uid: String, salt: String});
 var fsSchema = Schema({
 	name: String,
 	type: String,
@@ -20,24 +22,58 @@ File = mongoose.model('file', fsSchema);
 FileSystem = mongoose.model('FileSystem', {uid: String, root: Schema.Types.ObjectId});
 Token = mongoose.model('Token', {uid: String, platform: String, owner: String, Token: Schema.Types.Mixed});
 
-exports.createUser = function (name, pw, callback){
-	var user = new User({name: name, pw: pw});
-	user.save(function(err){
-		callback(err);
-	});
+exports.createUser = function (uid, email, pw1, pw2, callback){
+	if (pw1 != pw2) callback("Passwords do not match!");
+	if (!uid.match(/^[0-9a-zA-Z]+$/)) callback("User name contains invalid characters");
+	else{
+		User.findOne({uid: uid}, function(err, user){
+			if (err) callback(err);
+			if (user != null) callback("Duplicate user name");
+			else{
+				var saltString = crypto.randomBytes(16).toString('base64');
+				var newSalt = new Salt({uid: uid, salt: saltString});
+				var hmac = crypto.createHmac('sha256', saltString);
+				hmac.update(pw1);
+				var user = new User({uid: uid, pw: hmac.digest('base64'), email: email});
+				user.save(function(err){
+					if (err) callback(err);
+					else{
+						newSalt.save(function(err){
+							if (err) callback(err);
+							else{
+								exports.initDir(uid, function(err, root){
+									callback(err);
+								});
+							}
+						});
+					}
+				});
+			}
+		});
+	}
 };
 
-exports.findUser = function (name, callback){
-	User.find({name: name}, function(err, user){
-		callback(err, user);
-	});
-};
+exports.loginUser = function (uid, password, callback){
+	Salt.findOne({uid: uid}, function(err, saltEntry){
+		if (err) callback(err);
+		if (saltEntry == null) callback("Username/Password incorrect");
+		else{
+			User.findOne({uid: uid}, function(err, user){
+				if (err) callback(err);
+				if (user == null) callback("Username/Password incorrect");
+				else{
+					var hmac = crypto.createHmac('sha256', saltEntry.salt);
 
-exports.deleteUser = function (name, callback){
-	User.remove({name: name}, function(err){
-		callback(err);
+					hmac.update(password);
+					var inputpw = hmac.digest('base64');
+					if (inputpw === user.pw) callback(null);
+
+					else callback("Username/Password incorrect")
+				}
+			});
+		}
 	});
-};
+}
 
 exports.addGoogleDrive = function (uid, code, callback){
 	googleapis.getAccessToken(code, function(err, token){
