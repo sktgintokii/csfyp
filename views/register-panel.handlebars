@@ -2,26 +2,26 @@
     <h1 id="title">Welcome to Dr. Hub</h1>
 </article>
 
-<form>
+<form id="reg-form" method="POST" action="/account/api/register">
     <h1>Register Form</h1>
     <h1 id="reg-icon"><i class="fa fa-user-plus fa-2x"></i></h1>
 
     <div class="form-group">
         <label for="exampleInputEmail1">Login Name</label>
-        <input type="text" class="form-control" id="uesrid" placeholder="Enter login name" required pattern="(\w+)">
+        <input type="text" class="form-control" id="uesrid" placeholder="Enter login name" required name="userid" pattern="(\w+)">
     </div>
 
     <div class="form-group">
         <label for="exampleInputEmail1">Email Address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email" required>
+        <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Enter email" name="email" required>
     </div>
     <div id="pw-input-group" class="form-group">
         <label for="password-input">Password</label>
-        <input type="password" class="form-control" id="password-input" placeholder="Password" required>
+        <input type="password" class="form-control" id="password-input" placeholder="Password" name="pw" required>
     </div>
     <div id="confirm-pw-input-group" class="form-group">
         <label for="confirm-password-input">Confirm Password</label>
-        <input type="password" class="form-control" id="confirm-password-input" placeholder="Confirm Password" required>
+        <input type="password" class="form-control" id="confirm-password-input" placeholder="Confirm Password" name="pw2" required>
     </div>
     <div>
         <button type="submit" class="btn btn-success btn-block">Sign up</button>        
