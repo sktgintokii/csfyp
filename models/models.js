@@ -24,7 +24,8 @@ Token = mongoose.model('Token', {uid: String, platform: String, owner: String, T
 
 exports.createUser = function (uid, email, pw1, pw2, callback){
 	if (pw1 !== pw2) callback("Passwords do not match!");
-	if (!uid.match(/^[0-9a-zA-Z]+$/)) callback("User name contains invalid characters");
+	else if (newpw1 === '') callback("Cannot set password to be empty");
+	else if (!uid.match(/^[0-9a-zA-Z]+$/)) callback("User name contains invalid characters");
 	else{
 		User.findOne({uid: uid}, function(err, user){
 			if (err) callback(err);
@@ -76,6 +77,7 @@ exports.loginUser = function (uid, password, callback){
 
 exports.changePassword = function(uid, oldpw, newpw1, newpw2, callback){
 	if (newpw1 !== newpw2) callback("New passwords do not match!");
+	else if (newpw1 === '') callback("Cannot set password to be empty");
 	else{
 		Salt.findOne({uid: uid}, function(err, saltEntry){
 			if (err) callback(err);
