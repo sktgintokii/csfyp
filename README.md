@@ -2,6 +2,7 @@
 
 #TODO:
 * Minor UI Improvement(Add drive close window/Upload error handling)
+  * Right click, Download/open
   * Close Tab after Add Drive
   * Upload Error bar/box, e.g. don't have enough capacity, other error
   * Capacity Initial State
