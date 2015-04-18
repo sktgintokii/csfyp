@@ -90,8 +90,9 @@ exports.changePassword = function(uid, oldpw, newpw1, newpw2, callback){
 						var oldpwHash = hmac.digest('base64');
 						if (oldpwHash !== user.pw) callback('Username/Password incorrect');
 						else{
-							hmac.update(newpw1);
-							var newpwHash = hmac.digest('base64');
+							var hmac2 = crypto.createHmac('sha256', saltEntry.salt);
+							hmac2.update(newpw1);
+							var newpwHash = hmac2.digest('base64');
 							user.pw = newpwHash;
 							User.findByIdAndUpdate(user._id, user, function(err){
 								callback(err);
