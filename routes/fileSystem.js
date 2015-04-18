@@ -76,7 +76,7 @@ app.get('/createDir', function (req, res){
 // IN: session.username, fileid
 // OUT: err, downloadLink
 app.get('/getDownloadLink', function(req, res){
-	models.downloadChunk(req.session.username, req.query.fileid, function(err, filePath){
+	models.downloadFile(req.session.username, req.query.fileid, function(err, filePath){
 		//res.send({err: err, downloadLink: downloadLink});
 		res.download(filePath);
 	});

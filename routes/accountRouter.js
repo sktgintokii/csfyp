@@ -14,9 +14,16 @@ module.exports = function (){
 
 
 	app.post('/api/register', function (req, res){
-		console.log('fuck you jimmy');
 		models.createUser(req.body.userid, req.body.email, req.body.pw, req.body.pw2, function(err){
-			res.send({err: err});
+			if (err) return res.status(400).json({err: err}).end();
+			else return res.status(200).end();
+		});
+	});
+
+	app.post('/api/changepw', function(req, res){
+		models.changePassword(req.body.userid, req.body.oldpw, req.body.newpw1, req.body.newpw2, function(err){
+			if (err) return res.status(400).json({err: err}).end();
+			else return res.status(200).end();
 		});
 	});
 
