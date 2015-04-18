@@ -24,7 +24,7 @@ Token = mongoose.model('Token', {uid: String, platform: String, owner: String, T
 
 exports.createUser = function (uid, email, pw1, pw2, callback){
 	if (pw1 !== pw2) callback("Passwords do not match!");
-	else if (newpw1 === '') callback("Cannot set password to be empty");
+	else if (pw1 === '') callback("Cannot set password to be empty");
 	else if (!uid.match(/^[0-9a-zA-Z]+$/)) callback("User name contains invalid characters");
 	else{
 		User.findOne({uid: uid}, function(err, user){
@@ -452,14 +452,18 @@ function downloadFile(uid, fileid, prefix, callback){
 				else fileName = prefix + file.name;
 				var fullfileName = process.cwd() + '/Downloads/' + fileName;
 				fs.mkdirSync(fullfileName);
-				for (var i = 0; i < file.children.length; i++){
-					downloadFile(uid, file.children[i], fileName + '/', function(err, path){
-						if (err) retError = err;
-						remainNo--;
-						if (remainNo == 0){
-							callback(retError, fileName);
-						}
-					});
+				if (remainNo == 0){
+					callback(retError, fileName);
+				}else{
+					for (var i = 0; i < file.children.length; i++){
+						downloadFile(uid, file.children[i], fileName + '/', function(err, path){
+							if (err) retError = err;
+							remainNo--;
+							if (remainNo == 0){
+								callback(retError, fileName);
+							}
+						});
+					}
 				}
 			}
 		}
