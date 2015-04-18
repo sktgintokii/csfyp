@@ -1,4 +1,5 @@
 var dir, uid;
+var fileUploadCnt = 0;
 var options = {
 	title: 'My Daily Activities',
 	sliceVisibilityThreshold: 0,
@@ -19,16 +20,22 @@ function sendFile(file) {
             //alert(xhr.responseText); // handle response.
             console.log(xhr.responseText);
             init();
+            fileUploadCnt -= 1;
+
+            if (fileUploadCnt < 1){
+            	document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
+            }
         }
     };
     fd.append('fileid', dir);
     fd.append('upload', file);
     // Initiate a multipart/form-data upload
     xhr.send(fd);
+    fileUploadCnt += 1;
 
 	document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "visible";
 	window.setTimeout(function(){
-		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
+		
 	}, 1500);
 
 }
@@ -98,7 +105,7 @@ function showFileList(err, res){
 			iconClass = 'fa fa-file';
 		}
 	
-		content += '<tr tabindex="0" fileid="' + file._id + '">' +
+		content += '<tr tabindex="0" draggable="true" fileid="' + file._id + '">' +
 				'<td aria-label="icon"><i class="' + iconClass + '"</i></td>'+ 
 				'<td aria-label="name">' + file.name + '</td>' +
 				'<td aria-label="type">' + file.type + '</td>' +
