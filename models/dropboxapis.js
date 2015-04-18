@@ -82,12 +82,12 @@ exports.uploadFile = function (accessToken, attributes, callback){
 };
 
 // id - file id in google drive
-exports.downloadChunk = function (accessToken, id, callback){
+exports.downloadChunk = function (accessToken, id, path, callback){
 	var client = dboxapp.client(accessToken);
 	client.get(id, function(status, data, reply){
 		if (status != 200) callback(reply, null);
 		else{
-			fs.writeFileSync('./downloads/' + id, data, {flag: 'w'});
+			fs.writeFileSync('./downloads/' + path + id, data, {flag: 'w'});
 			callback(null, reply);
 		}
 	});

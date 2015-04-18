@@ -3,6 +3,7 @@ var fs = require('fs');
 var Schema = mongoose.Schema;
 var googleapis = require('./googleapis.js');
 var dropboxapis = require('./dropboxapis.js');
+var exec = require('child_process').exec;
 mongoose.connect('mongodb://localhost:27017/fyp');
 
 User = mongoose.model('users', {name: String, pw: String});
@@ -87,7 +88,7 @@ exports.addDropboxDrive = function (uid, requestToken	, callback){
 };
 
 exports.initDir = function(uid, callback){
-	var root = new File({name: "root", type: "dir", children: [], parent: null, owner: uid});
+	var root = new File({name: "root", type: "dir", children: [], dist: [], parent: null, owner: uid});
 	var entry = new FileSystem({uid: uid, root: root._id});
 	FileSystem.findOne({uid: uid}, function(err, user){
 		if (err) callback(err, null);
@@ -159,7 +160,7 @@ exports.createFolder = function (dirName, fileid, uid, callback){
 		else if (file.type != "dir") callback("Cannot upload file to a non-directory", null);
 		else if (file.owner != uid) callback("Invalid Credential", null);
 		else{
-			var newFolder = new File({name: dirName, type: "dir", children: [], parent: fileid, owner: uid});
+			var newFolder = new File({name: dirName, type: "dir", children: [], parent: fileid, owner: uid, dist: []});
 			file.children.push(newFolder._id);
 			File.findByIdAndUpdate(fileid, file, function(err){
 				if (err) callback(err, null);
@@ -309,70 +310,111 @@ function getTokenById(id, order, callback){
 	});
 }
 
+function downloadFile(uid, fileid, prefix, callback){
+	File.findById(fileid, function(err, file){
+		if (err) callback(err, file);
+		else if (file == null) callback("ID not found", null);
+		else if (file.owner != uid) callback("Invalid Credential", null);
+		else{
+			if (file.type == 'file'){
+				if (file.dist.length == 0) callback("No Storage found", null);
+				else{
+					var remainNo = file.dist.length;
+					var retError = null;
+					for (var i = 0; i < file.dist.length; i++){
+						getTokenById(file.dist[i].drive, i, function(err, id, entry){
+							if (err) retError = err;
+							else if (entry == null) retError = "Access tokens not found";
+							else{
+								if (entry.platform == 'Google'){
+									googleapis.downloadChunk(entry.Token, file.dist[id].did, prefix, function(err){
+										if (err) retError = err;
+										else{
+											remainNo--;
+											if (remainNo == 0){
+												if (retError) callback(retError, null);
+												else{
+													// Reassembly the file
+													var targetPath = process.cwd() + '/Downloads/' + prefix + file.name;
+													fs.writeFileSync(targetPath, '', {flag: 'w'});
+													for (var i = 0; i < file.dist.length; i++){
+														var chunkPath = process.cwd() + '/Downloads/' + prefix + file.name + '.' + i;
+														var buffer = fs.readFileSync(chunkPath);
+														fs.writeFileSync(targetPath, buffer, {flag: 'a'});
+														fs.unlinkSync(chunkPath);
+													}
+													callback(err, targetPath);
+												}
+											}
+										}
+									});
+								}else if (entry.platform == 'Dropbox'){
+									// DDMD
+									dropboxapis.downloadChunk(entry.Token, file.dist[id].did, prefix, function(err){
+										if (err) retError = err;
+										else{
+											remainNo--;
+											if (remainNo == 0){
+												if (retError) callback(retError, null);
+												else{
+													// Reassembly the file
+													var targetPath = process.cwd() + '/Downloads/' + prefix + file.name;
+													fs.writeFileSync(targetPath, '', {flag: 'w'});
+													for (var i = 0; i < file.dist.length; i++){
+														var chunkPath = process.cwd() + '/Downloads/' + prefix + file.name + '.' + i;
+														var buffer = fs.readFileSync(chunkPath);
+														fs.writeFileSync(targetPath, buffer, {flag: 'a'});
+														fs.unlinkSync(chunkPath);
+													}
+													callback(err, targetPath);
+												}
+											}
+										}
+									});
+								}
+							}
+						});
+					}
+				}
+			}else if (file.type == 'dir'){
+				var remainNo = file.children.length;
+				var retError = null;
+				var fileName = prefix + file.name + Date.now();
+				var fullfileName = process.cwd() + '/Downloads/' + fileName;
+				fs.mkdirSync(fullfileName);
+				for (var i = 0; i < file.children.length; i++){
+					downloadFile(uid, file.children[i], fileName + '/', function(err, path){
+						if (err) retError = err;
+						remainNo--;
+						if (remainNo == 0){
+							callback(retError, fileName);
+						}
+					});
+				}
+			}
+		}
+	});
+}
+
+var escapeShell = function(cmd) {
+  return cmd.replace(/(["\s'$`\\])/g,'\\$1');
+};
+
 exports.downloadFile = function(uid, fileid, callback){
 	File.findById(fileid, function(err, file){
 		if (err) callback(err, file);
 		else if (file == null) callback("ID not found", null);
-		else if (file.type == "dir") callback("Cannot download a directory", null);
-		else if (file.dist.length == 0) callback("No Storage found", null);
 		else if (file.owner != uid) callback("Invalid Credential", null);
-		else{
-			var remainNo = file.dist.length;
-			var retError = null;
-			for (var i = 0; i < file.dist.length; i++){
-				getTokenById(file.dist[i].drive, i, function(err, id, entry){
-					if (err) retError = err;
-					else if (entry == null) retError = "Access tokens not found";
-					else{
-						if (entry.platform == 'Google'){
-							googleapis.downloadChunk(entry.Token, file.dist[id].did, function(err){
-								if (err) retError = err;
-								else{
-									remainNo--;
-									if (remainNo == 0){
-										if (retError) callback(retError, null);
-										else{
-											// Reassembly the file
-											var targetPath = process.cwd() + '/Downloads/' + file.name;
-											fs.writeFileSync(targetPath, '', {flag: 'w'});
-											for (var i = 0; i < file.dist.length; i++){
-												var chunkPath = process.cwd() + '/Downloads/' + file.name + '.' + i;
-												var buffer = fs.readFileSync(chunkPath);
-												fs.writeFileSync(targetPath, buffer, {flag: 'a'});
-												fs.unlinkSync(chunkPath);
-											}
-											callback(err, targetPath);
-										}
-									}
-								}
-							});
-						}else if (entry.platform == 'Dropbox'){
-							// DDMD
-							dropboxapis.downloadChunk(entry.Token, file.dist[id].did, function(err){
-								if (err) retError = err;
-								else{
-									remainNo--;
-									if (remainNo == 0){
-										if (retError) callback(retError, null);
-										else{
-											// Reassembly the file
-											var targetPath = process.cwd() + '/Downloads/' + file.name;
-											fs.writeFileSync(targetPath, '', {flag: 'w'});
-											for (var i = 0; i < file.dist.length; i++){
-												var chunkPath = process.cwd() + '/Downloads/' + file.name + '.' + i;
-												var buffer = fs.readFileSync(chunkPath);
-												fs.writeFileSync(targetPath, buffer, {flag: 'a'});
-												fs.unlinkSync(chunkPath);
-											}
-											callback(err, targetPath);
-										}
-									}
-								}
-							});
-						}
-					}
+		else if (file.type == 'file'){
+			downloadFile(uid, fileid, '', function(err, path){
+				callback(err, path);
+			});
+		}else if (file.type == 'dir'){
+			downloadFile(uid, fileid, '', function(err, path){
+				exec("cd downloads; zip -r " + "\"" + path + "\"" + ".zip " + "\"" + path + "\"", function (error, stdout, stderr) {
+					callback(err, "downloads/" + path + ".zip");
 				});
-			}
+			});
 		}
 	});
 }

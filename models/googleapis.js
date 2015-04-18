@@ -83,7 +83,7 @@ exports.uploadChunk = function (accessToken, attributes, offset, size, order, ca
 };
 
 // id - file id in google drive
-exports.downloadChunk = function (accessToken, id, callback){
+exports.downloadChunk = function (accessToken, id, path, callback){
 	oauth2Client.setCredentials(accessToken);
 	oauth2Client.refreshAccessToken(function(err, tokens) {
 		if (err) callback(err);
@@ -104,7 +104,7 @@ exports.downloadChunk = function (accessToken, id, callback){
 					};
 					var req = https.get(options, function(res) {
 						res.on('data', function(data) {
-							fs.writeFileSync('./downloads/' + reply.title, data, {flag: 'a'});
+							fs.writeFileSync('./downloads/' + path + reply.title, data, {flag: 'a'});
 						});
 						res.on('end', function(){
 							callback(err, reply);
