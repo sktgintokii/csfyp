@@ -38,7 +38,7 @@ function onSubmitHandler(e) {
 
 			alert('Account is created Successfully');
 			// refresh the page with latest results
-			location.reload();
+			//location.href = '/';
 		});
 }
 
@@ -65,7 +65,6 @@ function validate(e){
 		pwEle.classList.add('has-error');
 		pwConfirmEle.classList.add('has-error');
 
-		document.querySelector('#password-input').focus();
 	
 	}
 
