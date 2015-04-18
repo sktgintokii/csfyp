@@ -21,6 +21,35 @@ function serializeFormData(form) {
 	}).join('&');
 };
 
+function validate(e) {
+	var valid;
+
+	var pwEle = document.querySelector('#pw-input-group'),
+		pwConfirmEle = document.querySelector('#confirm-pw-input-group'),
+		pw = document.querySelector('#password-input').value,
+		pwConfirm = document.querySelector('#confirm-password-input').value;
+
+		valid = pw && (pw === pwConfirm);
+	if (valid){
+		pwEle.classList.remove('has-error');
+		pwConfirmEle.classList.remove('has-error');
+
+		pwEle.classList.add('has-success');
+		pwConfirmEle.classList.add('has-success');
+
+	} else {
+		pwEle.classList.remove('has-success');
+		pwConfirmEle.classList.remove('has-success');
+
+		pwEle.classList.add('has-error');
+		pwConfirmEle.classList.add('has-error');
+
+	
+	}
+
+	return valid;
+}
+
 function sendFile(file) {
     var uri = "/fs/uploadFile";
     var xhr = new XMLHttpRequest();
@@ -347,34 +376,35 @@ function uploadFileHandler(e){
 function changePWHandler(e){
 	e.preventDefault();
 
-	var form = document.querySelector('#change-pw-form');
-	var data = new FormData(form);
+
 	jQuery.ajax({
 	    url: '/account/api/changepw',
-	    data: data,
+	    data: $('#change-pw-form').serialize(),
 	    cache: false,
-	    contentType: false,
-	    processData: false,
 	    type: 'POST',
 	    success: function(data){
-	    	if (data.err)
-	    		return console.log(data.err);
+	    	alert('Password has been changed!');
+
 	    },
-	    error: function(){
+	    error: function(err){
+	    	console.log(err);
 	    }
 	});
 
-/*
-	superagent
-		.post('/account/api/changepw')
-		.send(serializeFormData())
-		.end(function (err, res){
-			var error = err || res.body.err;
-			if (error){
-				return console.log('Error when changing pw: %s', error);
-			}
-		});
-*/
+
+	// var form = document.querySelector('#change-pw-form');
+	// console.log(serializeFormData(form));
+
+	// superagent
+	// 	.post(form.getAttribute('action'))
+	// 	.send(serializeFormData(form))
+	// 	.end(function (err, res){
+	// 		var error = err || res.body.err;
+	// 		if (error){
+	// 			return console.log('Error when changing pw: %s', error);
+	// 		}
+	// 	});
+
 }
 
 function fileListHandlers(ele){
@@ -480,6 +510,9 @@ document.querySelector('#create-folder-modal .confirm-btn').addEventListener("cl
 document.querySelector('#upload-modal .confirm-btn').addEventListener("click", uploadFileHandler);
 document.querySelector('#password-modal .confirm-btn').addEventListener("click", changePWHandler);
 
+
+document.querySelector('#password-input').addEventListener('change', validate);
+document.querySelector('#confirm-password-input').addEventListener('change', validate);
 
 
 [].forEach.call(document.querySelectorAll('#file-list > tbody > tr'), fileListHandlers);

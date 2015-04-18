@@ -253,24 +253,24 @@
 			</div>
 			<div class="modal-body">
 				<div class="container-fluid">
-					<form class="form-horizontal" id="change-pw-form" method="POST" action="/account/api/changepw">
+					<form enctype="application/x-www-form-urlencoded" class="form-horizontal" id="change-pw-form" method="POST" action="/account/api/changepw">
 						<input type="hidden" name="userid" value="{{uid}}">
-						<div class="form-group">
+						<div id="old-pw-input-group" class="form-group">
 							<label for="create-folder-input" class="col-xs-4 control-label">Current Password</label>
 							<div class="col-xs-6">
 	    						<input type="password" class="form-control" name="oldpw">
 	    					</div>
 	    				</div>
-	    				<div class="form-group">
+	    				<div id="pw-input-group" class="form-group">
 							<label for="create-folder-input" class="col-xs-4 control-label">New Password</label>
 							<div class="col-xs-6">
-	    						<input type="password" class="form-control" name="newpw1">
+	    						<input id="password-input" type="password" class="form-control" name="newpw1">
 	    					</div>
 	    				</div>
-	    				<div class="form-group">
+	    				<div id="confirm-pw-input-group" class="form-group">
 							<label for="create-folder-input" class="col-xs-4 control-label">Confirm Password</label>
 							<div class="col-xs-6">
-	    						<input type="password" class="form-control" name="newpw2">
+	    						<input id="confirm-password-input" type="password" class="form-control" name="newpw2">
 	    					</div>
 	    				</div>
 					</form>
