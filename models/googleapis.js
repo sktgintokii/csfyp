@@ -1,6 +1,8 @@
 var express = require('express');
 var google = require('googleapis');
 var fs = require('fs');
+var https = require('https');
+var url = require('url');
 var OAuth2 = google.auth.OAuth2;
 
 var CLIENT_ID = '280286530527-lh0iqa2kh1r9si7v7v84ldn181n4caca.apps.googleusercontent.com';
@@ -35,48 +37,84 @@ Template of attributes
      truncated: false,
      buffer: null } }
 */
-exports.uploadFile = function (accessToken, attributes, callback){
+
+function readChunk(path, offset, size, callback){
+	var data = new Buffer(size);
+
+	fs.open(path, 'r', function(err, fd){
+		if (err) callback(err, null);
+		else{
+			var bytesRead = 0;
+			while (bytesRead < size) {
+	            bytesRead += fs.readSync(fd, data, 0, size, offset);
+	        }
+	        fs.closeSync(fd);
+			callback(null, data);
+		}
+	});
+}
+
+exports.uploadChunk = function (accessToken, attributes, offset, size, order, callback){
 	oauth2Client.setCredentials(accessToken);
 	oauth2Client.refreshAccessToken(function(err, tokens) {
+		if (err) callback(err, order, null);
+		else{
+			var drive = google.drive({ version: 'v2', auth: oauth2Client });
+			readChunk(attributes.path, offset, size, function(err, data){
+				if (err) callback(err, order, null);
+				else{
+					var req = drive.files.insert({
+						resource: {
+					    	title: attributes.originalname + '.' + order,
+					    	mimeType: 'text/plain',
+					    	shared: true,
+					  	},
+					  	media: {
+					    	mimeType: 'application/binary',
+					    	body: data
+					  	}
+					}, function(err, reply){
+						callback(err, order, reply);
+					});
+				}
+			});
+		}
+	});
+};
 
-		var drive = google.drive({ version: 'v2', auth: oauth2Client });
+// id - file id in google drive
+exports.downloadChunk = function (accessToken, id, path, callback){
+	oauth2Client.setCredentials(accessToken);
+	oauth2Client.refreshAccessToken(function(err, tokens) {
+		if (err) callback(err);
+		else{
+			var drive = google.drive({ version: 'v2', auth: oauth2Client });
+			drive.files.get({fileId: id}, function(err, reply){
+				if (err) callback(err, null);
+				else{
 
-		fs.readFile(attributes.path, function (err, data){
-			if (err) callback(err, null);
-			else{
-				var req = drive.files.insert({
-					resource: {
-				    	title: attributes.name,
-				    	mimeType: 'text/plain',
-				    	shared: true
-				  	},
-				  	media: {
-				    	mimeType: 'text/plain',
-				    	body: data
-				  	}
-				}, function(err, reply){
+					var urlObj = url.parse(reply.downloadUrl);
 
-					if (err) callback(err, reply);
-					else{
-						fs.unlink("./uploads/" + attributes.name, function(err){
-							if (err) callback(err, null);
-							else{
-								drive.permissions.insert({
-									fileId: reply.id,
-									resource: {
-										role: "reader",
-										type: "anyone",
-										withLink: true
-									}
-								}, function(err, resp){
-									callback(err, reply);
-								});
-							}
+					var options = {
+						hostname: urlObj.host,
+						path: reply.downloadUrl,
+						port: 443,
+						method: 'GET',
+						headers: {'Authorization': 'Bearer ' + tokens.access_token}
+					};
+					var req = https.get(options, function(res) {
+						res.on('data', function(data) {
+							fs.writeFileSync('./downloads/' + path + reply.title, data, {flag: 'a'});
 						});
-					}
-				});
-			}
-		});
+						res.on('end', function(){
+							callback(err, reply);
+						});
+					}).on('error', function(err) {
+					 	callback(err, null);
+					});
+				}
+			});
+		}
 	});
 };
 

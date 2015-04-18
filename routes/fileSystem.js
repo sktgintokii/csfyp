@@ -76,8 +76,9 @@ app.get('/createDir', function (req, res){
 // IN: session.username, fileid
 // OUT: err, downloadLink
 app.get('/getDownloadLink', function(req, res){
-	models.getDownloadLink(req.session.username, req.query.fileid, function(err, downloadLink){
-		res.send({err: err, downloadLink: downloadLink});
+	models.downloadChunk(req.session.username, req.query.fileid, function(err, filePath){
+		//res.send({err: err, downloadLink: downloadLink});
+		res.download(filePath);
 	});
 });
 
@@ -121,6 +122,13 @@ app.get('/searchFile', function(req, res){
 	models.searchFile(req.query.fileid, req.session.username, req.query.filename, function(err, files){
 		res.send({err: err, files: files});
 	})
+});
+
+// For testing
+app.get('/initDirTest', function (req, res){
+	models.initDir(req.query.username, function(err, ret){
+		res.send({err: err, ret: ret});
+	});
 });
 
 module.exports = app;
