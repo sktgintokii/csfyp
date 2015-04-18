@@ -4,7 +4,8 @@ var express = require('express'),
  	session = require('express-session'),
  	crypto = require('crypto'),
  	csurf = require('csurf'),
- 	cookieParser = require('cookie-parser');
+ 	cookieParser = require('cookie-parser'),
+ 	models = require('../models/models.js');
 
 
 var inputPattern = {
@@ -106,15 +107,24 @@ module.exports = function (){
 */
 		res.clearCookie("cutFileId");
 
+		models.loginUser(req.body.username, req.body.password, function(err){
+			if (err) return res.status(400).end();
+			else{
+				req.session.regenerate(function(err){
+					req.session.username = req.body.username;
+					req.session.user = 1;
+					res.status(200).json({'loginOK': 1}).end();
+				});
+			}
+		});
+
+/*
 		if (req.body.username === 'ABC' && req.body.password === '123'){
-			req.session.regenerate(function(err){
-				req.session.username = req.body.username;
-				req.session.user = 1;
-				res.status(200).json({'loginOK': 1}).end();
-			});
+			
 		} else {
-			return res.status(400).end(); 
+			
 		}
+		*/
 	});
 
 	app.use('/', function (req, res, next){
