@@ -60,7 +60,9 @@ function sendFile(file) {
         if (xhr.readyState == 4 && xhr.status == 200) {
             // Handle response.
             //alert(xhr.responseText); // handle response.
-            console.log(xhr.responseText);
+            console.log(JSON.parse(xhr.responseText).err);
+			showErrDialog(JSON.parse(xhr.responseText).err);
+
             init();
             fileUploadCnt -= 1;
 
@@ -234,12 +236,15 @@ function init(){
 			var usedSpace = Number(capacity.totalSpace) - Number(capacity.totalUsedSpace);
 
 			console.log(res.body.capacity, usedSpace, Number(capacity.totalSpace), Number(capacity.totalUsedSpace))
-			editChart(usedSpace, capacity.totalUsedSpace);
+			//editChart(usedSpace, capacity.totalUsedSpace);
 
+			var mb = 1024 * 1024;
+			var used = Number(capacity.totalUsedSpace) / mb;
+			var unused = (Number(capacity.totalSpace) - Number(capacity.totalUsedSpace)) / mb;
 			var data = google.visualization.arrayToDataTable([
-			  ['State of space allocated', 'Bytes'],
-			  ['Used',      Number(capacity.totalUsedSpace)],
-			  ['Unused',     Number(capacity.totalSpace) - Number(capacity.totalUsedSpace)]
+			  ['State of space allocated', 'MB'],
+			  ['Used (MB)', Math.round(used)],
+			  ['Unused (MB)', Math.round(unused)]
 			]);
 
 			drawChart(data);
@@ -258,9 +263,9 @@ function drawChart(input) {
 		data = input;
 	} else {
 		data = google.visualization.arrayToDataTable([
-		  ['State of space allocated', 'Bytes'],
-		  ['Used',      0],
-		  ['Unused',     1]
+		  ['State of space allocated', 'MB'],
+		  ['Used space (MB)',      0],
+		  ['Unused space (MB)',     1]
 		]);
 	}
 
@@ -308,6 +313,16 @@ function setDriveDetailsTable(list){
 	table.innerHTML = content;
 }
 
+function showErrDialog(msg){
+	var dialog = document.querySelector('#error-dialog');
+	dialog.innerHTML = '<strong>Warning! </strong>' + msg;
+	dialog.style.visibility = "visible";
+	setTimeout(function(){
+		dialog.innerHTML = '';
+		dialog.style.visibility = 'hidden'
+	}, 3000);
+}
+
 //----------------List of Event Handlers-------------------
 function createFolderHandler(e){
 	e.preventDefault();
@@ -352,15 +367,17 @@ function uploadFileHandler(e){
 	    processData: false,
 	    type: 'POST',
 	    success: function(data){
-	    	if (data.err)
-	    		return console.log(data.err);
-	    	init();
-	    	form.reset();
 	    	fileUploadCnt -= 1;
 	    	if (fileUploadCnt < 1){
 	    		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
 	    	}
 
+	    	if (data.err){
+	    		showErrDialog(data.err)
+	    		return console.log(data.err);
+	    	}
+	    	init();
+	    	form.reset();
 
 	    },
 	    error: function(){
@@ -368,6 +385,8 @@ function uploadFileHandler(e){
 	    	if (fileUploadCnt < 1){
 	    		document.querySelector('.navbar-fixed-bottom .alert').style.visibility = "hidden";
 	    	}
+	    	showErrDialog('Fail to upload file');
+
 	    	console.log('Fail to upload file');
 	    }
 	});

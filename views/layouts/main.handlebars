@@ -70,7 +70,6 @@
 
 
 <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
-    <li id='context-menu-open'><a tabindex="-1" href="#">Open</a></li>
     <li id='context-menu-download'><a tabindex="-1" href="#">Download</a></li>
     <li id='context-menu-cut'><a  tabindex="-1" href="#">Cut</a></li>
     <li id='context-menu-paste' class="hidden"><a  tabindex="-1" href="#">Paste</a></li>
@@ -217,14 +216,6 @@
 									</tr>
 								</thead>
 								<tbody>
-									<tr>
-										<td><i class="fa fa-google fa-fw"></td>
-										<td>user1@gmail.com</td>
-									</tr>
-									<tr>
-										<td><i class="fa fa-dropbox fa-fw"></td>
-										<td>user2@cuhk.edu.hk</td>
-									</tr>
 								</tbody>
 								
 							</table>
@@ -290,6 +281,9 @@
   		<div class="alert alert-info pull-right show" role="alert">
   			<i class="fa fa-spinner fa-pulse"></i>
   			&nbsp;Upload processing...
+  		</div>
+
+  		<div id="error-dialog" class="alert alert-danger pull-right show" role="alert">
   		</div>
   	</div>
 </nav>

@@ -111,7 +111,7 @@ $("#main-file-panel").contextMenu({
             //console.log(invokedOn.parent().attr('fileid'));
 
             var targetFileId;
-            if (targetType.toLowerCase() === 'dir'){
+            if (targetType && targetType.toLowerCase() === 'dir'){
                 targetFileId = invokedOn.parent().attr('fileid');
 
             } else {
@@ -124,6 +124,12 @@ $("#main-file-panel").contextMenu({
             $("#context-menu-paste").addClass("hidden");
 
             moveFileById(cutFileId, targetFileId);
+        }
+
+        if (selectedMenu.text().toLowerCase() === 'download'){
+            var fileid = invokedOn.parent().attr('fileid');
+            document.getElementById('dl-iframe').src = '/fs/getDownloadLink?fileid=' + fileid;
+            document.getElementById('dl-iframe').click();
         }
 /*
         var msg = "You selected the menu item '" + selectedMenu.text() +
