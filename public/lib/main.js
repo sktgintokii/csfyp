@@ -61,7 +61,8 @@ function sendFile(file) {
             // Handle response.
             //alert(xhr.responseText); // handle response.
             console.log(JSON.parse(xhr.responseText).err);
-			showErrDialog(JSON.parse(xhr.responseText).err);
+            if (JSON.parse(xhr.responseText).err)
+				showErrDialog(JSON.parse(xhr.responseText).err);
 
             init();
             fileUploadCnt -= 1;
