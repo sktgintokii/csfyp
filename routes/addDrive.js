@@ -37,7 +37,7 @@ app.use('/getReqToken/dropbox', function(req, res){
 app.use('/getToken/google', function (req, res){
 	models.addGoogleDrive(req.session.username, req.query.code, function(err){
 		if (err){
-			res.redirect('/addDrive/error?err=' + JSON.stringify(err));
+			res.redirect('/addDrive/error?err=' + encodeURIComponent(err));
 		} else {
 			res.redirect('/addDrive/success');
 		}
@@ -47,7 +47,7 @@ app.use('/getToken/google', function (req, res){
 app.use('/getToken/dropbox', function(req, res){
 	models.addDropboxDrive(req.session.username, req.session.reqToken, function(err){
 		if (err){
-			res.redirect('/addDrive/error?err=' + JSON.stringify(err));
+			res.redirect('/addDrive/error?err=' + encodeURIComponent(err));
 		} else{
 			res.redirect('/addDrive/success');
 		}
