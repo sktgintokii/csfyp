@@ -191,6 +191,20 @@ function moveFileById(sfileid, dfileid){
 		});
 }
 
+function unzipFileById(fileId){
+	superagent
+		.get('/fs/unzipFile')
+		.query({fileId: fileId})
+		.end(function (err, res){
+			var error = err || res.body.err;
+			if (error){
+				return console.log('Error when unzipping file: %s', error);
+			}
+
+			init();
+		});
+}
+
 function init(){
 	dir = getQueryString()['dir'];
 	uid = document.querySelector('#user-id').innerHTML;

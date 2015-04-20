@@ -71,6 +71,7 @@
 
 <ul id="contextMenu" class="dropdown-menu" role="menu" style="display:none" >
     <li id='context-menu-download'><a tabindex="-1" href="#">Download</a></li>
+    <li id='context-menu-cut'><a  tabindex="-1" href="#">Unzip</a></li>
     <li id='context-menu-cut'><a  tabindex="-1" href="#">Cut</a></li>
     <li id='context-menu-paste' class="hidden"><a  tabindex="-1" href="#">Paste</a></li>
     <li id='context-menu-delete'><a tabindex="-1" href="#">Delete</a></li>
@@ -278,6 +279,9 @@
 
 <nav class="navbar navbar-default navbar-fixed-bottom">
   	<div class="container">
+  		<div id="cut-file-dialog" class="alert alert-warning pull-right show" role="alert">
+  		</div>
+
   		<div class="alert alert-info pull-right show" role="alert">
   			<i class="fa fa-spinner fa-pulse"></i>
   			&nbsp;Upload processing...

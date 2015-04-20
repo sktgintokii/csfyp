@@ -1,8 +1,18 @@
 // src = https://jsfiddle.net/KyleMit/X9tgY/
+function showCutFileDialog(target){
+    document.querySelector('#cut-file-dialog').style.visibility = "visible";
+}
+
+function hideCutFileDialog(){
+    document.querySelector('#cut-file-dialog').style.visibility = "hidden";
+}
+
 var cutFileId = docCookies.getItem("cutFileId");
 if (cutFileId){
+    showCutFileDialog();
     $("#context-menu-paste").removeClass("hidden");
 } else {
+    hideCutFileDialog();
     $("#context-menu-paste").addClass("hidden");
 }
 
@@ -104,6 +114,12 @@ $("#main-file-panel").contextMenu({
             cutFileId = invokedOn.parent().attr('fileid');
             $("#context-menu-paste").removeClass("hidden");
             docCookies.setItem("cutFileId", cutFileId);
+
+            var target = invokedOn.parent().find('td[aria-label="name"]').text();
+
+            console.log(target)
+
+            showCutFileDialog();
         }
 
         if (selectedMenu.text().toLowerCase() === 'paste'){
@@ -122,6 +138,7 @@ $("#main-file-panel").contextMenu({
 
             docCookies.removeItem("cutFileId");
             $("#context-menu-paste").addClass("hidden");
+            hideCutFileDialog();
 
             moveFileById(cutFileId, targetFileId);
         }
@@ -130,6 +147,11 @@ $("#main-file-panel").contextMenu({
             var fileid = invokedOn.parent().attr('fileid');
             document.getElementById('dl-iframe').src = '/fs/getDownloadLink?fileid=' + fileid;
             document.getElementById('dl-iframe').click();
+        }
+
+        if (selectedMenu.text().toLowerCase() === 'unzip'){
+            var fileid = invokedOn.parent().attr('fileid');
+            unzipFileById(fileid);
         }
 /*
         var msg = "You selected the menu item '" + selectedMenu.text() +
