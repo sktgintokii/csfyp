@@ -111,6 +111,7 @@ app.get('/deleteFile', function (req, res){
 // IN: sfileid, dfileid
 // OUT: err
 app.get('/moveFile', function (req, res){
+	console.log(req.query);
 	models.moveFile(req.query.sfileid, req.query.dfileid, req.session.username, function(err){
 		res.send({err: err});
 	});
@@ -123,6 +124,17 @@ app.get('/searchFile', function(req, res){
 		res.send({err: err, files: files});
 	})
 });
+
+// IN: fileid, session.username
+// OUT: err
+/*
+app.get('/unzipFile', function(req, res){
+	models.unzipFile(req.query.fileId, req.session.username, function(err, files){
+		console.log('fid' + req.query.fileId);
+		res.send({err: err});
+	});
+});
+*/
 
 // For testing
 app.get('/initDirTest', function (req, res){

@@ -191,6 +191,7 @@ exports.listFiles = function(fileid, uid, callback){
 			var query = [];
 			for (var i = 0; i < file.children.length; i++) query.push(file.children[i]._id);
 			File.find({"_id": { $in: query}}, function(err, children){
+				children.sort(function(a,b){ return a.name > b.name ? 1 : -1; })
 				callback(err, children);
 			});
 		}
@@ -808,6 +809,35 @@ exports.searchFile = function(fileid, uid, filename, callback){
 		callback(err, files);
 	});
 };
+/*
+function unzipFile(fileid, uid, callback){
+
+}
+
+exports.unzipFile = function(fileid, uid, callback){
+	exports.downloadFile(uid, fileid, function(err, path){
+		if (err) callback(err);
+		else{
+			var totalSize = 0;
+			fs.createReadStream(path).pipe(unzip.Extract({ path: process.cwd() + '/Uploads/' }))
+			.on('entry', function (entry) {
+				totalSize += entry.size;
+			});
+			console.log('size  =  ' + totalSize);
+			exports.getCapacity(uid, function(err, capacity){
+				if (err) callback(err);
+				else if (capacity.space - capacity.usedSpace < totalSize) callback('No enough space');
+				else{
+					unzipFile(fileid, uid, function(err){
+						callback(err);
+					});
+				}
+			})
+			
+		}
+	});
+};
+*/
 
 /* The Testing function to dump the whole file structure */
 function dumpStructure(id, prefix){
